@@ -108,9 +108,11 @@ fn emit_widget(widget: &Widget, parent_name: &str, counter: &mut usize, lines: &
 
 fn constructor_name(kind: WidgetKind) -> &'static str {
     match kind {
-        WidgetKind::Container | WidgetKind::Row | WidgetKind::Column | WidgetKind::Grid | WidgetKind::Card => {
-            "lv_obj_create"
-        }
+        WidgetKind::Container
+        | WidgetKind::Row
+        | WidgetKind::Column
+        | WidgetKind::Grid
+        | WidgetKind::Card => "lv_obj_create",
         WidgetKind::Text => "lv_label_create",
         WidgetKind::Button => "lv_button_create",
         WidgetKind::Image => "lv_image_create",

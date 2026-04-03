@@ -99,7 +99,10 @@ fn validate_project(path: &Path) -> Result<()> {
     println!("styles: {}", layout.style_files.len());
 
     for document in &documents {
-        println!("validated provisional frontend for {}", document.source_name);
+        println!(
+            "validated provisional frontend for {}",
+            document.source_name
+        );
     }
 
     for diagnostic in analysis.diagnostics {
@@ -116,7 +119,9 @@ fn build_project(path: &Path) -> Result<()> {
     let analysis = analyze_documents(&config.project_name, &documents);
 
     if analysis.project.screens.is_empty() {
-        bail!("build is not available yet; parser and semantic lowering are still being implemented");
+        bail!(
+            "build is not available yet; parser and semantic lowering are still being implemented"
+        );
     }
 
     let files = generate_files(&analysis.project);
@@ -182,30 +187,38 @@ fn parse_project_sources(layout: &ProjectLayout) -> Result<Vec<Document>> {
     let mut documents = Vec::new();
 
     for path in &layout.screen_files {
-        let source =
-            fs::read_to_string(path).with_context(|| format!("failed to read {}", path.display()))?;
-        let outcome = parse_document(path, &source, DocumentKind::Markup)
-            .map_err(render_parse_errors)?;
+        let source = fs::read_to_string(path)
+            .with_context(|| format!("failed to read {}", path.display()))?;
+        let outcome =
+            parse_document(path, &source, DocumentKind::Markup).map_err(render_parse_errors)?;
 
         for diagnostic in outcome.diagnostics {
             println!("{diagnostic}");
         }
 
-        println!("tokenized {} tokens from {}", outcome.token_count, path.display());
+        println!(
+            "tokenized {} tokens from {}",
+            outcome.token_count,
+            path.display()
+        );
         documents.push(outcome.document);
     }
 
     for path in &layout.style_files {
-        let source =
-            fs::read_to_string(path).with_context(|| format!("failed to read {}", path.display()))?;
-        let outcome = parse_document(path, &source, DocumentKind::Style)
-            .map_err(render_parse_errors)?;
+        let source = fs::read_to_string(path)
+            .with_context(|| format!("failed to read {}", path.display()))?;
+        let outcome =
+            parse_document(path, &source, DocumentKind::Style).map_err(render_parse_errors)?;
 
         for diagnostic in outcome.diagnostics {
             println!("{diagnostic}");
         }
 
-        println!("tokenized {} tokens from {}", outcome.token_count, path.display());
+        println!(
+            "tokenized {} tokens from {}",
+            outcome.token_count,
+            path.display()
+        );
         documents.push(outcome.document);
     }
 

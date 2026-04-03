@@ -55,7 +55,7 @@ pub fn lex_provisional(path: &Path, input: &str) -> Result<Vec<Token>, Vec<Diagn
                 let mut value = String::new();
                 let mut terminated = false;
 
-                while let Some(next) = chars.next() {
+                for next in chars.by_ref() {
                     match next {
                         '"' => {
                             column += 1;
@@ -215,7 +215,9 @@ mod tests {
 
         assert!(tokens.len() > 10);
         assert!(tokens.iter().any(|token| token.lexeme == "Screen"));
-        assert!(tokens.iter().any(|token| token.kind == TokenKind::StringLiteral));
+        assert!(tokens
+            .iter()
+            .any(|token| token.kind == TokenKind::StringLiteral));
     }
 
     #[test]

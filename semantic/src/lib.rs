@@ -18,8 +18,12 @@ pub fn analyze_documents(project_name: &str, documents: &[Document]) -> Analysis
 
     if documents.iter().all(|document| document.items.is_empty()) {
         diagnostics.push(
-            Diagnostic::warning("semantic lowering is deferred until the authored grammar is ratified")
-                .with_hint("the current pass validates repo shape, config, fixtures, and compiler boundaries"),
+            Diagnostic::warning(
+                "semantic lowering is deferred until the authored grammar is ratified",
+            )
+            .with_hint(
+                "the current pass validates repo shape, config, fixtures, and compiler boundaries",
+            ),
         );
     }
 

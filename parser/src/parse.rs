@@ -16,13 +16,14 @@ pub fn parse_document(
     kind: DocumentKind,
 ) -> Result<ParseOutcome, Vec<Diagnostic>> {
     let tokens = lex_provisional(path, text)?;
-    let mut diagnostics = Vec::new();
-
-    diagnostics.push(
-        Diagnostic::warning("full source parsing is deferred in the first repository pass")
-            .with_file(path.to_path_buf())
-            .with_hint("use this pass to evolve docs, fixtures, lexer coverage, and AST contracts"),
-    );
+    let diagnostics =
+        vec![
+            Diagnostic::warning("full source parsing is deferred in the first repository pass")
+                .with_file(path.to_path_buf())
+                .with_hint(
+                    "use this pass to evolve docs, fixtures, lexer coverage, and AST contracts",
+                ),
+        ];
 
     Ok(ParseOutcome {
         document: Document::new(path.display().to_string(), kind),
