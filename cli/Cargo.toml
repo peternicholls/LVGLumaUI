@@ -1,0 +1,13 @@
+[package]
+name = "lumaui-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+clap.workspace = true
+lumaui-backend-lvgl-c = { path = "../backend/lvgl_c" }
+lumaui-compiler = { path = "../compiler" }
+lumaui-parser = { path = "../parser" }
+lumaui-semantic = { path = "../semantic" }

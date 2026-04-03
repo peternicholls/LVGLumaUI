@@ -1,0 +1,10 @@
+[package]
+name = "lumaui-semantic"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+lumaui-compiler = { path = "../compiler" }
+lumaui-ir = { path = "../ir" }
+lumaui-parser = { path = "../parser" }

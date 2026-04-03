@@ -1,0 +1,8 @@
+[package]
+name = "lumaui-backend-lvgl-c"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+lumaui-ir = { path = "../../ir" }
