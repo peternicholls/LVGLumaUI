@@ -1,0 +1,20 @@
+<Screen id="dashboard">
+  <Column class="screen">
+    <Row class="header">
+      <Text id="title" text="Control Panel"/>
+      <Button id="refreshButton">
+        <Text text="Refresh"/>
+      </Button>
+    </Row>
+    <Grid class="content">
+      <Card id="statusCard">
+        <Text text="Status"/>
+        <Text id="statusValue" bind="status_text"/>
+      </Card>
+      <Card id="metricsCard">
+        <Text text="Metrics"/>
+        <Image id="chartImage" source="metrics_chart"/>
+      </Card>
+    </Grid>
+  </Column>
+</Screen>

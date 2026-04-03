@@ -1,0 +1,16 @@
+.screen {
+  padding: 20;
+  background-color: #10151c;
+}
+
+.header {
+  padding: 12;
+}
+
+.content {
+  padding: 12;
+}
+
+#title {
+  text-color: #ffffff;
+}

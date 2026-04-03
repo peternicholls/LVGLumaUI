@@ -1,0 +1,7 @@
+project_name = "dashboard"
+lvgl_version = "9.x"
+source_dir = "ui"
+output_dir = "generated/ui"
+
+[naming]
+symbol_prefix = "dashboard_"
