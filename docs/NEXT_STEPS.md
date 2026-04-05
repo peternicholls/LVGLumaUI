@@ -33,7 +33,7 @@ Not complete yet:
 Execution rule:
 
 - Treat `001-brownfield-spec` as the integration branch for the active brownfield slice, not the branch for direct phase implementation work.
-- Create one child branch per phase from the current tip of `001-brownfield-spec`, open each phase PR back into `001-brownfield-spec`, and start the next phase branch only after the previous PR merges.
+- Create one flat-named phase branch per phase from the current tip of `001-brownfield-spec`, open each phase PR back into `001-brownfield-spec`, and start the next phase branch only after the previous PR merges.
 - For any code-bearing step, write or update the failing test, fixture, snapshot, or command assertion first.
 - Keep helpers and modules single-purpose so stage isolation remains easy to review.
 - When `doctor`, `validate`, or `build` output changes, treat logging and diagnostics as explicit contract behavior and verify them deliberately.

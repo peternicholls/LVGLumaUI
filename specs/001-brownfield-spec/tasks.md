@@ -152,10 +152,10 @@
 ### Branch and PR Workflow
 
 - `001-brownfield-spec` is the integration branch for this feature.
-- Execute each phase on its own child branch created from the current tip of `001-brownfield-spec`.
+- Execute each phase on its own flat-named phase branch created from the current tip of `001-brownfield-spec`.
 - Open every phase PR against `001-brownfield-spec`, not `master`.
 - Create the next phase branch only after the previous phase PR merges so later work inherits the reviewed feature baseline.
-- Prefer descriptive phase branch names such as `001-brownfield-spec/phase-1-setup`, `001-brownfield-spec/phase-2-us1-ratification`, `001-brownfield-spec/phase-3-foundation`, `001-brownfield-spec/phase-4-us2-validation`, `001-brownfield-spec/phase-5-us3-build`, and `001-brownfield-spec/phase-6-polish`.
+- Prefer descriptive flat phase branch names such as `001-brownfield-spec-phase-1-setup`, `001-brownfield-spec-phase-2-us1-ratification`, `001-brownfield-spec-phase-3-foundation`, `001-brownfield-spec-phase-4-us2-validation`, `001-brownfield-spec-phase-5-us3-build`, and `001-brownfield-spec-phase-6-polish`.
 
 ### User Story Dependencies
 

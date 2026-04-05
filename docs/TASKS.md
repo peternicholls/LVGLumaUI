@@ -11,7 +11,7 @@ This roadmap is phase-based.
 
 Document storage and filing rules live in `docs/DOCUMENTATION_SCHEME.md` and should be followed when adding or relocating repository or feature documents.
 
-For the active brownfield feature slice, `001-brownfield-spec` is the integration branch. Execute each documented phase on its own child branch created from the current tip of `001-brownfield-spec`, open the phase PR back into `001-brownfield-spec`, and cut the next phase branch only after the previous phase PR merges.
+For the active brownfield feature slice, `001-brownfield-spec` is the integration branch. Execute each documented phase on its own flat-named phase branch created from the current tip of `001-brownfield-spec`, open the phase PR back into `001-brownfield-spec`, and cut the next phase branch only after the previous phase PR merges.
 
 ## Engineering Rules
 
@@ -232,7 +232,7 @@ Add a preview path without compromising compiler-first design.
 - Do not widen language scope to unblock parser work; narrow the slice instead.
 - Do not add backend cleverness to compensate for unclear semantics.
 - Do not let examples promise more than the implementation supports.
-- Keep Git review scope aligned with phase gates: one phase branch per phase, PR base `001-brownfield-spec`, then branch the next phase from the updated integration tip.
+- Keep Git review scope aligned with phase gates: one flat-named phase branch per phase, PR base `001-brownfield-spec`, then branch the next phase from the updated integration tip.
 - Update docs, fixtures, and tests together.
 - Update logging expectations and command assertions together when operator-visible behavior changes.
 - Prefer concise, reviewable documentation updates over broad prose that drifts from the actual implementation.

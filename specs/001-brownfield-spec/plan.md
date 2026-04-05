@@ -1,13 +1,13 @@
 # Implementation Plan: Brownfield MVP Compiler Slice
 
-**Branch**: `001-brownfield-spec` integration branch with one child branch per phase | **Date**: 2026-04-05 | **Spec**: `/specs/001-brownfield-spec/spec.md`
+**Branch**: `001-brownfield-spec` integration branch with one flat-named phase branch per phase | **Date**: 2026-04-05 | **Spec**: `/specs/001-brownfield-spec/spec.md`
 **Input**: Feature specification from `/specs/001-brownfield-spec/spec.md`
 
 ## Summary
 
 Ratify the narrowest honest LumaUI language slice for `examples/minimal`, then use that ratified subset to drive one gated implementation path from parser work through semantic validation, canonical IR, and deterministic LVGL C generation. The plan keeps Phase 1 centered on documentation and parser completion, treats semantic, IR, and backend work as downstream gates rather than simultaneous redesign, and keeps bindings, broader widgets, and browser-like semantics explicitly deferred.
 
-Delivery follows a phase-branch workflow: `001-brownfield-spec` remains the integration branch, each phase is implemented on its own child branch, each child branch lands by PR into `001-brownfield-spec`, and the next phase branch is cut only after the previous phase merge completes.
+Delivery follows a phase-branch workflow: `001-brownfield-spec` remains the integration branch, each phase is implemented on its own flat-named phase branch, each phase branch lands by PR into `001-brownfield-spec`, and the next phase branch is cut only after the previous phase merge completes.
 
 ## Technical Context
 
@@ -92,7 +92,7 @@ Research findings are recorded in `research.md`. The resulting decisions that dr
 
 **Decision governance rule**: The agent should research and document stage-shaping choices before implementation locks them in. Supporting material should include options, pros and cons, relevant practices, implementation developments, risks, and open questions. Final direction is deferred until the developer reviews and signs off.
 
-**Branch governance rule**: Phase-gated execution is also a Git workflow rule. Contributors work on one phase branch at a time, target `001-brownfield-spec` as the PR base for every phase branch, and avoid stacking later-phase implementation on unmerged earlier-phase work.
+**Branch governance rule**: Phase-gated execution is also a Git workflow rule. Contributors work on one flat-named phase branch at a time, target `001-brownfield-spec` as the PR base for every phase branch, and avoid stacking later-phase implementation on unmerged earlier-phase work.
 
 ## Research and Sign-Off Expectations
 
