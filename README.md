@@ -59,12 +59,15 @@ This repo intentionally prioritizes foundation over breadth.
 ```text
 .
 ├── AGENTS.md
-├── ARCHITECTURE.md
-├── LANGUAGE_SPEC.md
-├── LVGL_MAPPING.md
-├── NEXT_STEPS.md
-├── PRD.md
-├── TASKS.md
+├── docs/
+│   ├── ARCHITECTURE.md
+│   ├── LANGUAGE_SPEC.md
+│   ├── LVGL_MAPPING.md
+│   ├── NEXT_STEPS.md
+│   ├── PRD.md
+│   ├── TASKS.md
+│   ├── one-shot-prompt.md
+│   └── project_specification.md
 ├── cli/
 ├── compiler/
 ├── parser/
