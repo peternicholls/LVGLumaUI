@@ -3,9 +3,15 @@
 **Input**: Design documents from `/specs/001-brownfield-spec/`
 **Prerequisites**: `plan.md`, `spec.md`, `research.md`, `data-model.md`, `quickstart.md`, `contracts/cli-commands.md`
 
-**Tests**: Tests are required for parser behavior, semantic validation, IR shape, backend output, CLI validation/build behavior, fixture classification, and generated snapshots. User Story 1 is primarily a docs and fixture ratification slice, but any starter-project change in `cli/src/main.rs` must carry explicit CLI regression coverage.
+**Tests**: Tests are required for parser behavior, semantic validation, IR shape, backend output, CLI validation/build behavior, fixture classification, generated snapshots, deterministic diagnostics, and operator-visible logging behavior where logging is part of the command contract. Code-bearing work follows test-driven development: add or extend failing tests, fixtures, or snapshots before implementation, then keep them green as the slice moves forward. User Story 1 is primarily a docs and fixture ratification slice, but any starter-project change in `cli/src/main.rs` must carry explicit CLI regression coverage.
 
 **Organization**: Tasks are grouped by user story so each slice can be delivered and verified in constitution-compliant phase order.
+
+**Engineering Quality**: Keep functions, modules, and stage boundaries narrow; prefer small, explicit contracts over convenience coupling; refactor duplication or ambiguous ownership when tests expose it. Logging must be intentional, deterministic, and stage-scoped so operators can understand `doctor`, `validate`, and `build` behavior without turning generated output or diagnostics into noise.
+
+**Documentation Quality**: Treat documentation as part of the shipped product surface. Update normative docs, examples, fixture labels, and operator guidance in the same change when behavior or scope changes. Keep terminology consistent, distinguish ratified behavior from aspirational notes, and prefer concise, reviewable explanations that stay synchronized with tests and generated artifacts.
+
+**Decision Governance**: Stage-shaping decisions are research-first and developer-approved. Before ratifying language, reshaping shared contracts, widening backend mappings, or committing to preview/runtime direction, the agent should prepare clear supporting material for discussion: options considered, pros and cons, relevant practices, notable implementation developments, risks, and open questions. Final decisions remain deferred until the developer explicitly signs off.
 
 ## Phase 1: Setup (Shared Infrastructure)
 
@@ -13,8 +19,8 @@
 
 - [ ] T001 Create shared invalid markup fixtures in `tests/fixtures/unsupported_widget.lui`, `tests/fixtures/binding_reference.lui`, and `tests/fixtures/duplicate_ids.lui`
 - [ ] T002 [P] Create shared invalid style fixtures in `tests/fixtures/unsupported_selector.lus` and `tests/fixtures/unsupported_property.lus`
-- [ ] T003 [P] Update fixture usage guidance in `tests/README.md` for normative, expected-fail, and aspirational authored-source coverage
-- [ ] T004 Update example status guidance in `examples/minimal/README.md` and `examples/dashboard/README.md` so later tasks can classify fixtures consistently
+- [ ] T003 [P] Update fixture usage guidance in `tests/README.md` for normative, expected-fail, and aspirational authored-source coverage, including documentation conventions for each class
+- [ ] T004 Update example status guidance in `examples/minimal/README.md` and `examples/dashboard/README.md` so later tasks can classify fixtures consistently and document intended support status clearly
 
 ---
 
@@ -23,6 +29,8 @@
 **Goal**: Freeze the exact first-slice authored-language contract and fixture classification before parser, IR, or backend contracts move.
 
 **Independent Test**: Review `docs/LANGUAGE_SPEC.md`, `README.md`, `docs/TASKS.md`, `docs/NEXT_STEPS.md`, `docs/ARCHITECTURE.md`, `docs/LVGL_MAPPING.md`, `examples/minimal`, and `examples/dashboard` together, then run the CLI starter regression to confirm starter output matches the ratified first slice.
+
+**Decision Gate**: Ratification work in this story requires a developer review pass over the supporting research and comparison material before the contract is treated as signed off.
 
 ### Tests for User Story 1 ⚠️
 
@@ -37,7 +45,7 @@
 - [ ] T010 [US1] Update the normative fixture in `examples/minimal/ui/screens/home.lui` and `examples/minimal/ui/styles/theme.lus` so every construct is explicitly ratified
 - [ ] T011 [P] [US1] Mark aspirational fixture status and out-of-scope constructs in `examples/dashboard/README.md`, `examples/dashboard/ui/screens/dashboard.lui`, and `examples/dashboard/ui/styles/theme.lus`
 - [ ] T012 [US1] Align starter project output with the ratified first slice in `cli/src/main.rs`
-- [ ] T013 [US1] Reconcile all slice-level docs and fixture labels across `docs/LANGUAGE_SPEC.md`, `README.md`, `examples/minimal/README.md`, and `examples/dashboard/README.md`
+- [ ] T013 [US1] Reconcile all slice-level docs and fixture labels across `docs/LANGUAGE_SPEC.md`, `README.md`, `examples/minimal/README.md`, and `examples/dashboard/README.md`, keeping terminology and support-status wording consistent
 
 **Checkpoint**: The repo has one explicit, reviewable first-slice contract, one clearly labeled normative fixture, one clearly labeled aspirational fixture, and starter output that matches the ratified subset.
 
@@ -49,12 +57,14 @@
 
 **⚠️ CRITICAL**: No code-bearing user story work should begin until this phase is complete.
 
-- [ ] T014 Update span-aware diagnostic structures and rendering in `compiler/src/diagnostics.rs` and `compiler/src/lib.rs`
+**Decision Gate**: Changes to diagnostics contracts, parser-facing node contracts, canonical IR shape, or observable logging seams should be supported by written tradeoff analysis and explicit developer sign-off before downstream stages depend on them.
+
+- [ ] T014 Update span-aware diagnostic structures, rendering, and stage-level instrumentation seams in `compiler/src/diagnostics.rs` and `compiler/src/lib.rs`
 - [ ] T015 [P] Preserve deterministic source discovery and project layout contracts in `compiler/src/project.rs` and `compiler/src/config.rs`
 - [ ] T016 [P] Extend parser-facing node contracts for the ratified selector and event-reference surface in `parser/src/ast.rs` and `parser/src/lib.rs`
 - [ ] T017 [P] Define canonical first-slice IR contracts for ratified widgets, normalized styles, and event metadata in `ir/src/lib.rs`
-- [ ] T018 [P] Make normative versus aspirational test and snapshot participation explicit in `tests/README.md` and `backend/lvgl_c/tests/generation.rs`
-- [ ] T019 Confirm repository-level fixture and mapping claims in `README.md`, `examples/minimal/README.md`, `examples/dashboard/README.md`, and `docs/LVGL_MAPPING.md` do not exceed the ratified slice
+- [ ] T018 [P] Make normative versus aspirational test, snapshot, and observable logging participation explicit in `tests/README.md` and `backend/lvgl_c/tests/generation.rs`
+- [ ] T019 Confirm repository-level fixture and mapping claims in `README.md`, `examples/minimal/README.md`, `examples/dashboard/README.md`, and `docs/LVGL_MAPPING.md` do not exceed the ratified slice and remain documentation-consistent
 
 **Checkpoint**: Shared diagnostics, discovery, AST, IR, and fixture/snapshot participation rules are ready for code-bearing story implementation.
 
@@ -69,16 +79,16 @@
 ### Tests for User Story 2 ⚠️
 
 - [ ] T020 [P] [US2] Add parser success and failure coverage for the ratified subset in `parser/src/parse.rs`
-- [ ] T021 [P] [US2] Add semantic validation coverage for duplicate ids, unsupported widgets, unsupported properties, event references, and binding rejection in `semantic/src/lib.rs`
+- [ ] T021 [P] [US2] Add semantic validation and observable diagnostic/logging coverage for duplicate ids, unsupported widgets, unsupported properties, event references, and binding rejection in `semantic/src/lib.rs`
 - [ ] T022 [P] [US2] Wire shared invalid fixtures into regression scenarios in `tests/fixtures/unsupported_widget.lui`, `tests/fixtures/binding_reference.lui`, `tests/fixtures/unsupported_selector.lus`, `tests/fixtures/unsupported_property.lus`, and `tests/fixtures/duplicate_ids.lui`
 
 ### Implementation for User Story 2
 
 - [ ] T023 [US2] Implement ratified markup and style parsing in `parser/src/parse.rs` and `parser/src/lexer.rs`
 - [ ] T024 [P] [US2] Update exported parser node shapes and parse outcomes in `parser/src/ast.rs` and `parser/src/lib.rs`
-- [ ] T025 [US2] Implement source-located parse and validation diagnostics in `compiler/src/diagnostics.rs` and `semantic/src/lib.rs`
-- [ ] T026 [US2] Implement supported-surface validation, event-reference handling, and binding rejection in `semantic/src/lib.rs`
-- [ ] T027 [US2] Wire deterministic validate-command behavior over parsed documents in `cli/src/main.rs` and `compiler/src/project.rs`
+- [ ] T025 [US2] Implement source-located parse and validation diagnostics plus deterministic validation-stage logging in `compiler/src/diagnostics.rs` and `semantic/src/lib.rs`
+- [ ] T026 [US2] Implement supported-surface validation, event-reference handling, binding rejection, and clean single-purpose semantic helpers in `semantic/src/lib.rs`
+- [ ] T027 [US2] Wire deterministic validate-command behavior and operator-meaningful logging over parsed documents in `cli/src/main.rs` and `compiler/src/project.rs`
 
 **Checkpoint**: `validate` becomes a trustworthy phase-gated command for the normative example and the shared expected-fail fixtures.
 
@@ -90,18 +100,20 @@
 
 **Independent Test**: Run `cargo test -p lumaui-backend-lvgl-c` and `cargo run -p lumaui-cli -- build examples/minimal`; confirm repeated builds produce stable generated artifacts, preserve documented ownership boundaries, and keep aspirational fixtures out of the current snapshot path.
 
+**Decision Gate**: Backend ownership-boundary policy, generated-file conventions, and build-stage observability should be reviewed with the developer before being treated as settled repository policy.
+
 ### Tests for User Story 3 ⚠️
 
 - [ ] T028 [P] [US3] Add canonical IR lowering coverage for the minimal slice in `semantic/src/lib.rs` and `ir/src/lib.rs`
 - [ ] T029 [P] [US3] Add frontend-driven backend snapshot coverage, including ownership-boundary expectations, in `backend/lvgl_c/tests/generation.rs` and `tests/snapshots/minimal_screen.c`
-- [ ] T030 [P] [US3] Add build-command smoke coverage for the minimal project and explicit non-participation or expected-fail handling for aspirational fixtures in `cli/src/main.rs` and `backend/lvgl_c/tests/generation.rs`
+- [ ] T030 [P] [US3] Add build-command smoke coverage for the minimal project, success/failure logging expectations, and explicit non-participation or expected-fail handling for aspirational fixtures in `cli/src/main.rs` and `backend/lvgl_c/tests/generation.rs`
 
 ### Implementation for User Story 3
 
 - [ ] T031 [US3] Extend canonical IR structures for normalized widgets, style applications, event metadata, and ownership annotations in `ir/src/lib.rs`
 - [ ] T032 [US3] Implement semantic lowering from parsed documents into canonical IR in `semantic/src/lib.rs`
-- [ ] T033 [US3] Implement deterministic first-slice LVGL emission with compiler-owned and user-owned region boundaries in `backend/lvgl_c/src/lib.rs`
-- [ ] T034 [US3] Wire `lumaui build` to parse, validate, lower, and generate into `output_dir` in `cli/src/main.rs`
+- [ ] T033 [US3] Implement deterministic first-slice LVGL emission with compiler-owned and user-owned region boundaries plus backend-stage logging hooks in `backend/lvgl_c/src/lib.rs`
+- [ ] T034 [US3] Wire `lumaui build` to parse, validate, lower, generate into `output_dir`, and emit stage-scoped logging in `cli/src/main.rs`
 - [ ] T035 [US3] Reconcile generated-file naming, stable ordering, ownership-boundary output, and snapshot expectations in `backend/lvgl_c/src/lib.rs`, `backend/lvgl_c/tests/generation.rs`, and `tests/snapshots/minimal_screen.c`
 
 **Checkpoint**: The minimal example builds end to end into deterministic LVGL artifacts with explicit ownership semantics and visible snapshot/test scope.
@@ -112,10 +124,10 @@
 
 **Purpose**: Lock in consistency, determinism, and operator guidance across the completed slice.
 
-- [ ] T036 [P] Update execution guidance and verification steps in `docs/TASKS.md`, `docs/NEXT_STEPS.md`, and `specs/001-brownfield-spec/quickstart.md`
-- [ ] T037 [P] Update fixture and snapshot guidance in `tests/README.md`, `examples/minimal/README.md`, and `examples/dashboard/README.md`
-- [ ] T038 Verify `doctor`, `validate`, and `build` behavior against `examples/minimal` and expected-fail fixtures, fixing any issues in `cli/src/main.rs`, `parser/src/parse.rs`, `semantic/src/lib.rs`, and `backend/lvgl_c/src/lib.rs`
-- [ ] T039 Review preview deferral messaging, generated-output ownership wording, and LVGL mapping consistency in `cli/src/main.rs`, `backend/lvgl_c/src/lib.rs`, and `docs/LVGL_MAPPING.md`
+- [ ] T036 [P] Update execution guidance, TDD expectations, documentation practices, and verification steps in `docs/TASKS.md`, `docs/NEXT_STEPS.md`, and `specs/001-brownfield-spec/quickstart.md`
+- [ ] T037 [P] Update fixture, snapshot, and accompanying documentation guidance in `tests/README.md`, `examples/minimal/README.md`, and `examples/dashboard/README.md`
+- [ ] T038 Verify `doctor`, `validate`, and `build` behavior plus observable logging behavior against `examples/minimal` and expected-fail fixtures, fixing any issues in `cli/src/main.rs`, `parser/src/parse.rs`, `semantic/src/lib.rs`, and `backend/lvgl_c/src/lib.rs`
+- [ ] T039 Review preview deferral messaging, generated-output ownership wording, LVGL mapping consistency, and default-versus-verbose logging guidance in `cli/src/main.rs`, `backend/lvgl_c/src/lib.rs`, and `docs/LVGL_MAPPING.md`
 
 ---
 
@@ -138,10 +150,16 @@
 
 ### Within Each User Story
 
-- Add or update tests and fixtures before implementation for parser, semantic, IR, backend, or CLI behavior.
+- Add or update failing tests, fixtures, or snapshots before implementation for parser, semantic, IR, backend, or CLI behavior.
 - Complete documentation ratification before modifying contracts that depend on language shape.
+- For stage-shaping decisions, prepare supporting docs with options, pros/cons, practices, risks, and open questions before implementation commits the repository to one direction.
 - Update shared contracts before cross-stage wiring.
+- Keep helpers and modules single-purpose, preserve crate isolation, and refactor duplication when it weakens readability or testability.
 - Keep stage-local work isolated before integrating across crates.
+- Add deterministic, operator-meaningful logging at stage boundaries and failure paths without polluting generated artifacts or stable diagnostics.
+- Update user-facing and contributor-facing docs in the same change when behavior, support status, fixtures, or command output changes.
+- Keep ratified versus aspirational wording explicit so examples, mappings, and roadmap docs do not over-promise current support.
+- Defer final ratification of major stage decisions until the developer explicitly signs them off.
 - Complete story verification before moving to the next priority.
 
 ### Parallel Opportunities
@@ -214,3 +232,6 @@ Task: T030 Add build-command smoke coverage for the minimal project and explicit
 - User Story 1 is the suggested MVP because it freezes the contract that every later story depends on.
 - Foundational work now follows ratification so the task order matches the constitution’s ratification-first rule.
 - User Story 3 now carries explicit ownership-boundary and aspirational-fixture visibility work so generated-output and snapshot expectations are fully represented.
+- Logging is part of the software design surface for operator-facing commands, so tasks that shape command orchestration, diagnostics, or backend execution should treat logging behavior as testable contract work rather than ad hoc debugging output.
+- Documentation changes should stay synchronized with implementation, tests, fixtures, and roadmap state so the repository remains reviewable without tribal knowledge.
+- Research and recommendation material should inform major decisions, but developer sign-off is the authority that finalizes them.

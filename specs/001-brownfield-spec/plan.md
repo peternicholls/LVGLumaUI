@@ -12,11 +12,11 @@ Ratify the narrowest honest LumaUI language slice for `examples/minimal`, then u
 **Language/Version**: Rust 2021 workspace on the stable toolchain; authored `.lui` and `.lus` sources remain provisional until ratified  
 **Primary Dependencies**: `anyhow`, `clap` with derive, `serde` with derive, `toml`; LVGL 9.x C API family as the backend target  
 **Storage**: Filesystem only (`lumaui.toml`, `ui/screens/*.lui`, `ui/styles/*.lus`, generated `generated/ui/*.c` and `*.h`)  
-**Testing**: `cargo test`, parser unit tests, semantic validation tests, backend snapshot tests, CLI validation and build smoke checks against `examples/minimal`  
+**Testing**: `cargo test`, parser unit tests, semantic validation tests, backend snapshot tests, CLI validation and build smoke checks against `examples/minimal`, plus deterministic diagnostic and logging assertions where command observability is part of the contract  
 **Target Platform**: Host-side Rust CLI for developer machines and CI; generated output targets embedded firmware projects using LVGL 9.x  
 **Project Type**: Multi-crate compiler workspace with a CLI frontend  
 **Performance Goals**: Deterministic parsing, stable diagnostics, and repeatable generated output take priority over raw throughput; the normative example should validate and build fast enough for tight local iteration and CI use  
-**Constraints**: Compile-time-only workflow, no runtime interpretation, no browser semantics, strict stage isolation, explicit LVGL mapping only, hybrid ownership model for generated output, bindings rejected in the first slice  
+**Constraints**: Compile-time-only workflow, no runtime interpretation, no browser semantics, strict stage isolation, explicit LVGL mapping only, hybrid ownership model for generated output, bindings rejected in the first slice, and deterministic stage-scoped logging that does not pollute generated artifacts or stable diagnostics  
 **Scale/Scope**: One normative minimal project, two authored source kinds, five ratified widgets (`Screen`, `Column`, `Row`, `Text`, `Button`), class and id selectors, a tiny style-property subset, named event handler references, and one deterministic backend slice
 
 ## Constitution Check
@@ -84,6 +84,24 @@ Research findings are recorded in `research.md`. The resulting decisions that dr
 
 ## Implementation Strategy
 
+**Engineering quality rule**: Code-bearing tasks follow test-driven development, keep helpers and modules single-purpose, and treat logging and diagnostics as intentional user-facing behavior rather than temporary debugging output.
+
+**Documentation quality rule**: Documentation changes travel with behavior changes. Normative docs, example READMEs, fixture labels, and operator guidance must use consistent terminology, clearly separate ratified behavior from deferred work, and stay concise enough for reviewers to verify against code and tests.
+
+**Decision governance rule**: The agent should research and document stage-shaping choices before implementation locks them in. Supporting material should include options, pros and cons, relevant practices, implementation developments, risks, and open questions. Final direction is deferred until the developer reviews and signs off.
+
+## Research and Sign-Off Expectations
+
+The following categories require explicit developer review before they are considered settled:
+
+- authored-language ratification decisions
+- shared AST, semantic, IR, or diagnostic contract changes that affect downstream stages
+- backend ownership-boundary conventions and generated-file policies
+- observability conventions that change operator-facing command behavior
+- preview/runtime direction beyond the current compiler-first scope
+
+For these decisions, the agent should produce or update supporting documents in the feature packet and align repository docs only after the developer confirms the chosen direction.
+
 ### Workstream 1: Ratify the MVP Language Surface
 
 **Goal**: Turn the provisional language guidance into an explicit accepted-and-rejected contract for the first thin slice.
@@ -93,8 +111,11 @@ Research findings are recorded in `research.md`. The resulting decisions that dr
 - Update `docs/LANGUAGE_SPEC.md` from provisional guidance to a ratified MVP subset for the first slice.
 - Keep `docs/LVGL_MAPPING.md`, `docs/TASKS.md`, `docs/NEXT_STEPS.md`, `docs/ARCHITECTURE.md`, and `README.md` aligned with the ratified scope and explicit deferrals.
 - Align `examples/minimal` to the ratified subset and clearly label `examples/dashboard` or other broader fixtures as aspirational if they remain ahead of support.
+- Keep terminology and support-status wording aligned across all ratification docs so reviewers can compare them without interpretation drift.
 
 **Exit condition**: A reviewer can tell exactly what the parser must accept, what it must reject, which event reference form is valid, and that bindings remain out of scope.
+
+**Sign-off requirement**: The supporting research and tradeoff material for the ratified slice has been reviewed and approved by the developer.
 
 ### Workstream 2: Complete the Parser Gate
 
@@ -117,9 +138,11 @@ Research findings are recorded in `research.md`. The resulting decisions that dr
 
 - Expand `semantic/` from duplicate-id checks to supported widget validation, supported property validation, event-reference validation, and explicit binding rejection.
 - Refine `ir/` only as needed to represent the canonical first-slice widget tree, normalized style information, and event metadata without syntax-specific ambiguity.
-- Add semantic tests that cover duplicate ids, unsupported widgets, unsupported properties, out-of-scope bindings, and successful lowering for the minimal example.
+- Add semantic tests that cover duplicate ids, unsupported widgets, unsupported properties, out-of-scope bindings, successful lowering for the minimal example, and deterministic validation/logging behavior where exposed through the CLI contract.
 
 **Exit condition**: The semantic layer rejects unsupported constructs clearly and produces a canonical IR for the normative example without leaking parser quirks downstream.
+
+**Sign-off requirement**: Any contract changes that materially affect downstream lowering or backend assumptions have been discussed and approved by the developer before they are treated as stable.
 
 ### Workstream 4: Complete the Backend Gate
 
@@ -131,8 +154,11 @@ Research findings are recorded in `research.md`. The resulting decisions that dr
 - Restrict `backend/lvgl_c/` to the explicitly mapped first-slice widgets and properties.
 - Emit stable file names, stable symbol naming, stable widget creation order, and the documented hybrid ownership model boundaries.
 - Replace or supplement synthetic backend-only snapshots with frontend-driven snapshots from `examples/minimal`.
+- Add stage-scoped logging hooks and coverage so build progress and failure paths are observable without destabilizing snapshots or generated files.
 
 **Exit condition**: The minimal example builds into stable `.c` and `.h` files with no manual translation and no backend guessing.
+
+**Sign-off requirement**: Generated-file ownership boundaries, build-path observability behavior, and LVGL mapping conventions used by the slice have been reviewed and approved by the developer.
 
 ### Workstream 5: Normative Fixture and Stability Alignment
 
@@ -144,6 +170,8 @@ Research findings are recorded in `research.md`. The resulting decisions that dr
 - Keep `examples/minimal` as the trust anchor for current-phase success.
 - Treat `examples/dashboard` and any broader fixtures as expected-fail or aspirational until the supported slice expands.
 - Expand regression coverage only around implemented behavior and known failure cases.
+- Use regressions to drive refactoring when duplication, ambiguous ownership, or leaky stage boundaries appear during implementation.
+- Keep contributor-facing guidance concise and current so the repository can be understood without relying on historical context outside the docs.
 
 **Exit condition**: Maintainers can review docs, examples, tests, and snapshots in one pass and immediately tell what is expected to pass today.
 

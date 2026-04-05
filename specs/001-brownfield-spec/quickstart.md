@@ -10,6 +10,16 @@ Use this flow to move the repository from a provisional frontend scaffold to one
 - Working tree checked out on branch `001-brownfield-spec`
 - Repo docs reviewed, especially `docs/CONSTITUTION.md`, `docs/LANGUAGE_SPEC.md`, `docs/TASKS.md`, `docs/NEXT_STEPS.md`, and `docs/LVGL_MAPPING.md`
 
+## Working Rules
+
+- Start each code-bearing step by adding or updating a failing test, fixture, snapshot, or command-level assertion before implementation.
+- Keep helpers and modules single-purpose so parser, semantic, IR, backend, and CLI boundaries stay readable and testable.
+- Treat diagnostics and logging as stable operator-facing behavior: logs should describe stage progress and failure paths without contaminating generated output or deterministic error text.
+- Update normative docs, example READMEs, and fixture labels in the same change when implementation or support status changes.
+- Keep terminology consistent across docs so ratified behavior, deferred work, and aspirational examples are easy to distinguish.
+- For major stage decisions, prepare supporting discussion material before locking in implementation: options, pros/cons, relevant practices, implementation developments, risks, and open questions.
+- Do not treat stage-shaping decisions as final until the developer reviews the material and explicitly signs off.
+
 ## Step 1: Confirm the active phase and target slice
 
 The active repo state is Phase 0 with a planned transition into Phase 1. The target slice for this iteration is:
@@ -39,9 +49,13 @@ Expected current-state behavior:
 - `validate` tokenizes the provisional sources and reports current diagnostics.
 - `cargo test` passes the existing crate-local tests.
 
+Capture any current `doctor` or `validate` command output that is intended to remain user-visible so later tests can distinguish deliberate logging from accidental noise.
+
 ## Step 3: Ratify the language contract before broad parser work
 
 Update the docs so the MVP parser no longer has to guess. Complete this before expanding parser implementation.
+
+Before ratifying the slice, prepare or refresh the supporting research notes so the developer can review the tradeoffs rather than inheriting an implicit decision from code.
 
 Required alignments:
 
@@ -51,6 +65,8 @@ Required alignments:
 - state the binding rejection policy explicitly
 - ensure `README.md`, `docs/TASKS.md`, `docs/NEXT_STEPS.md`, `docs/ARCHITECTURE.md`, and `docs/LVGL_MAPPING.md` tell the same story
 - ensure `examples/minimal` only uses ratified constructs
+- ensure documentation wording distinguishes current support from future aspirations without ambiguity
+- capture the chosen recommendation and rejected alternatives clearly enough for developer sign-off
 
 ## Step 4: Implement the parser gate
 
@@ -58,11 +74,13 @@ Focus only on `parser/` plus shared diagnostics support in `compiler/`.
 
 Implementation checklist:
 
+- add or update failing parser tests and invalid fixtures first
 - parse markup documents into real `WidgetNode` trees
 - parse style documents into real `StyleRule` and `Declaration` records
 - attach source spans to syntax diagnostics
 - reject malformed syntax and unsupported selector forms clearly
 - add unit tests for both successful and failing parser cases
+- keep parser helpers narrow and avoid pushing semantic or backend concerns into parser code
 
 Verification commands:
 
@@ -77,14 +95,18 @@ Parser gate is complete when `examples/minimal` parses successfully and invalid 
 
 Once parsing is stable, expand only `semantic/` and `ir/`.
 
+If semantic or IR contract choices affect downstream assumptions, pause to refresh the supporting decision material and review it with the developer before treating the contract as fixed.
+
 Implementation checklist:
 
+- add or update failing semantic tests first
 - reject duplicate ids across the compiled project
 - validate supported widgets and supported properties
 - validate named event references
 - reject bindings and other deferred constructs explicitly
 - normalize accepted declarations into canonical semantic values
 - lower accepted input into canonical IR
+- emit deterministic validation-stage logging only where command behavior benefits from it
 
 Verification commands:
 
@@ -99,13 +121,17 @@ Semantic gate is complete when the minimal example lowers cleanly and invalid co
 
 Only after semantic IR exists should backend and CLI build work expand.
 
+Backend ownership-boundary policy and emitted-structure conventions should be discussed with the developer before they are treated as stable repository behavior.
+
 Implementation checklist:
 
+- add or update failing backend snapshots and CLI build assertions first
 - connect `lumaui build` to the real frontend and semantic pipeline
 - generate stable `.c` and `.h` artifacts for the minimal screen
 - keep naming, file order, and formatting deterministic
 - preserve the documented generated-output ownership model
 - add or update snapshots driven by real frontend input
+- keep backend/build logging stage-scoped, readable, and excluded from generated artifact contents
 
 Verification commands:
 
@@ -124,6 +150,8 @@ After the backend gate passes:
 - label `examples/dashboard` and any other broader examples as aspirational or expected-fail until supported
 - expand regression tests around implemented behavior only
 - keep snapshots readable and intentionally ordered
+- refactor duplication or unclear ownership that tests exposed while preserving deterministic behavior
+- confirm contributor-facing docs still describe the real workflow and verification steps succinctly
 
 ## Done Criteria For This Slice
 
@@ -133,4 +161,6 @@ The brownfield MVP slice is complete when:
 2. `examples/minimal` validates and builds end to end.
 3. Unsupported syntax, widgets, properties, and bindings fail clearly.
 4. Generated output is deterministic and reviewable.
-5. Docs, examples, tests, and snapshots all reflect the same supported surface.
+5. Docs, examples, tests, snapshots, and operator-visible logging all reflect the same supported surface.
+6. Documentation is concise, terminology-consistent, and explicit about what is ratified versus deferred.
+7. Major stage decisions taken during the slice were backed by written discussion material and explicit developer sign-off.

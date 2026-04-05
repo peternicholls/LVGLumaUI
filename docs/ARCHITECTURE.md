@@ -4,6 +4,13 @@
 
 LumaUI is structured as a staged compiler, not a monolith. Each stage owns a distinct transformation so that syntax, meaning, and backend mapping remain understandable and testable.
 
+The architecture also assumes two cross-cutting disciplines:
+
+- stage ownership stays narrow so each crate has one clear reason to change
+- observability is intentional so operators can see pipeline progress and failures without blurring stage responsibilities
+
+It also assumes decision discipline: architecture-shaping choices should be researched, documented, and discussed with the developer before they are treated as final repository policy.
+
 ## Pipeline
 
 ```text
@@ -60,9 +67,12 @@ Shared compiler infrastructure.
 - config loading
 - source discovery
 - diagnostics primitives
+- stage-level instrumentation primitives shared across commands
 - project-level utility types
 
 This crate deliberately avoids depending on higher compiler stages so it can serve as the base layer for the workspace.
+
+It owns shared diagnostic and instrumentation contracts, but it does not own parser rules, semantic policy, IR design, backend mapping, or CLI presentation decisions.
 
 ### `parser/`
 
@@ -74,6 +84,8 @@ Frontend data structures and tokenisation utilities.
 - future grammar parser
 
 The parser crate is allowed to know syntax, but not LVGL backend details.
+
+It owns syntax acceptance, source spans, and syntax-level failure reporting. It must not absorb semantic normalization, backend mapping shortcuts, or command-orchestration concerns.
 
 ### `semantic/`
 
@@ -87,6 +99,8 @@ Typed validation and meaning resolution.
 - lowering from AST to IR
 
 The semantic layer should reject unsupported constructs before code generation sees them.
+
+It owns meaning, validation policy, and normalization. It must not format CLI output, guess backend APIs, or re-interpret syntax that should already be settled in `parser/`.
 
 ### `ir/`
 
@@ -105,6 +119,8 @@ The IR must be:
 - explicit
 - free of syntax-specific quirks
 
+The IR owns canonical compiler-facing data shape only. It must not contain code generation policy, filesystem concerns, or user-facing logging rules.
+
 ### `backend/lvgl_c/`
 
 Deterministic LVGL C generation.
@@ -116,6 +132,8 @@ Deterministic LVGL C generation.
 
 The backend should never need to infer browser-like behavior. It should only consume already-resolved IR.
 
+It owns LVGL 9.x emission decisions and generated-file ownership boundaries. It must not perform semantic recovery, widen unsupported language features, or define CLI-facing progress messaging by itself.
+
 ### `cli/`
 
 User-facing entrypoint.
@@ -124,6 +142,27 @@ User-facing entrypoint.
 - invoking compiler stages
 - reporting diagnostics
 - writing generated output later
+
+The CLI owns operator-facing command flow, stage orchestration, and the final presentation of diagnostics and logs. It should not become a second home for parser, semantic, IR, or backend business logic.
+
+## Stage Ownership Rules
+
+Keep these boundaries explicit as the repository grows:
+
+- `compiler/` provides shared infrastructure contracts consumed by stages; it does not decide language semantics.
+- `parser/` decides whether authored text is syntactically valid; it does not decide whether the construct is supported in the MVP.
+- `semantic/` decides whether parsed constructs are valid and how they normalize; it does not decide emitted LVGL syntax.
+- `ir/` records canonical intent; it does not perform validation recovery or code emission.
+- `backend/lvgl_c/` maps canonical intent to LVGL C; it does not patch over unresolved upstream ambiguity.
+- `cli/` orchestrates stages and exposes operator behavior; it does not own compiler-stage policy.
+
+If a change makes ownership unclear across more than one adjacent stage, reduce the slice or introduce a clearer contract before continuing.
+
+When the contract itself is in question, the expected workflow is:
+
+- prepare supporting material that captures options, pros/cons, relevant practices, risks, and recent implementation developments
+- review that material with the developer
+- defer final architectural commitment until the developer signs off
 
 ## Determinism Rules
 
@@ -148,6 +187,27 @@ Each diagnostic should include:
 - optional hint
 
 The first pass includes a shared diagnostic type in `compiler/` so all stages can report issues consistently.
+
+## Observability
+
+Observability is a product concern for operator-facing commands, not incidental debug output.
+
+The repository should follow these rules:
+
+- logging is stage-scoped and deterministic
+- diagnostics remain stable, actionable, and separate from progress logs
+- generated `.c` and `.h` output never contains command logging noise
+- verbose tracing, if added later, must layer on top of the same stage boundaries instead of bypassing them
+
+Ownership expectations:
+
+- `compiler/` may define shared instrumentation types or hooks
+- stage crates may emit structured stage events or messages at their boundaries
+- `cli/` decides how those events become user-visible command output
+
+This keeps observability useful without turning every crate into its own logging frontend.
+
+Observability conventions that materially affect command behavior should follow the same sign-off path as other architecture-shaping decisions.
 
 ## Source and Output Separation
 
@@ -198,6 +258,7 @@ Before broad parser work:
 - supported syntax is documented
 - unsupported syntax is documented
 - example fixtures do not over-promise extra features
+- the supporting research and discussion material has been reviewed and signed off by the developer
 
 ### Gate B: Parser Gate
 
@@ -205,6 +266,7 @@ Before broad semantic work:
 
 - the MVP subset parses into a real AST
 - syntax errors produce useful diagnostics
+- parser-stage observability is intentional where exposed through commands
 - parser tests cover invalid inputs
 
 ### Gate C: Semantic Gate
@@ -214,6 +276,8 @@ Before broad backend work:
 - the MVP subset lowers into canonical IR
 - duplicate ids and unsupported properties are rejected
 - semantic normalization rules are explicit
+- validation-stage observability is intentional where exposed through commands
+- any shared contract changes have been reviewed and signed off by the developer
 
 ### Gate D: Backend Gate
 
@@ -222,6 +286,8 @@ Before preview or broader feature work:
 - one example goes from source to generated C
 - symbol naming is stable
 - generated output is snapshot-tested
+- build-stage observability is intentional and separate from generated artifacts
+- backend ownership-boundary and emission-policy decisions have been reviewed and signed off by the developer
 
 ## Extensibility
 

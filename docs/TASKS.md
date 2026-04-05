@@ -9,6 +9,18 @@ This roadmap is phase-based.
 - Each phase has an exit gate.
 - Work should stay inside the current phase unless a dependency is already satisfied.
 
+Document storage and filing rules live in `docs/DOCUMENTATION_SCHEME.md` and should be followed when adding or relocating repository or feature documents.
+
+## Engineering Rules
+
+- Start code-bearing work with failing tests, fixtures, snapshots, or command assertions before implementation.
+- Keep stage boundaries and helper responsibilities narrow; refactor duplication or leaky abstractions when they reduce clarity or testability.
+- Treat diagnostics and logging as part of the product surface for operator-facing commands. Logging should be deterministic, intentional, and separate from generated artifacts.
+- Update documentation in the same change when behavior, support status, fixtures, or command output changes.
+- Keep ratified behavior, deferred work, and aspirational examples clearly labeled so the roadmap does not overstate implementation status.
+- For stage-shaping choices, prepare written discussion material before locking in implementation: options, pros/cons, relevant practices, risks, and open questions.
+- Major architectural or language decisions are not final until the developer explicitly signs them off.
+
 ## Phase 0: Foundation
 
 ### Purpose
@@ -60,6 +72,7 @@ Turn provisional frontend scaffolding into a real, testable parser for a narrow 
 - ratified style grammar for the first supported subset
 - real AST construction
 - syntax diagnostics with spans
+- deterministic parser-stage logging guidance where command behavior exposes it
 - parser unit tests for success and failure cases
 
 ### Exit Gate
@@ -68,14 +81,16 @@ Turn provisional frontend scaffolding into a real, testable parser for a narrow 
 - markup parser supports the MVP screen tree subset
 - style parser supports the MVP declaration subset
 - diagnostics report source spans and actionable messages
+- operator-visible parser logging is intentional and non-noisy where present
 - parser unit tests cover success and failure cases
 - `examples/minimal` parses end-to-end
+- supporting research and discussion material for the ratified slice has been reviewed by the developer
 
 ### Immediate Work
 
 1. reduce the MVP language slice if needed
 2. update `LANGUAGE_SPEC.md` to ratify that slice
-3. implement parser tests
+3. implement parser tests first
 4. implement the parser against `examples/minimal`
 
 ## Phase 2: Semantic Analysis and IR
@@ -96,6 +111,7 @@ Resolve authored sources into a backend-ready, typed model.
 - property validation
 - normalized semantic property model
 - explicit event and binding references
+- deterministic validation-stage logging guidance where command behavior exposes it
 - lowering into the canonical IR
 
 ### Exit Gate
@@ -105,7 +121,9 @@ Resolve authored sources into a backend-ready, typed model.
 - style rules are validated and normalized
 - event and binding references are represented explicitly
 - semantic output lowers into the canonical IR
+- operator-visible validation logging is intentional and stable where present
 - semantic validation tests cover key failures
+- shared contract changes have been reviewed and signed off by the developer before downstream stages rely on them
 
 ### Immediate Work
 
@@ -130,6 +148,7 @@ Generate deterministic, readable LVGL C from IR.
 - stable symbol naming
 - deterministic emission order
 - readable generated code
+- deterministic build-stage logging guidance where command behavior exposes it
 - snapshot coverage for generated output
 
 ### Exit Gate
@@ -138,8 +157,10 @@ Generate deterministic, readable LVGL C from IR.
 - symbol naming is deterministic
 - supported widgets map to documented LVGL APIs
 - generated code is readable and sensibly structured
+- operator-visible build logging is intentional and does not leak into generated files
 - snapshot tests cover representative screens
 - one real example builds through the full compiler path
+- generated-file policy and backend mapping choices used by the slice have developer sign-off
 
 ### Immediate Work
 
@@ -210,3 +231,6 @@ Add a preview path without compromising compiler-first design.
 - Do not add backend cleverness to compensate for unclear semantics.
 - Do not let examples promise more than the implementation supports.
 - Update docs, fixtures, and tests together.
+- Update logging expectations and command assertions together when operator-visible behavior changes.
+- Prefer concise, reviewable documentation updates over broad prose that drifts from the actual implementation.
+- Produce discussion documents before finalizing major stage decisions, and defer the final call to the developer.

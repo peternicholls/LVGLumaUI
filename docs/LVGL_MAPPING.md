@@ -6,11 +6,26 @@ This document defines the intended mapping from LumaUI concepts to LVGL 9.x APIs
 
 Where a mapping is not yet settled, it is called out as a TODO instead of being hand-waved.
 
+This document only defines backend mapping responsibilities. Syntax acceptance, semantic validation, command logging, and project discovery remain owned by their upstream stages.
+
 ## Target Baseline
 
 First-pass planning assumes LVGL 9.x.
 
 Version adapters for LVGL 8.x or other compatibility modes are future work.
+
+## Mapping Ownership
+
+The mapping layer exists to answer one question: how does canonical IR become explicit LVGL 9.x calls?
+
+It does not own:
+
+- authored-language grammar decisions
+- duplicate-id or supported-surface validation
+- command orchestration or CLI output formatting
+- logging policy beyond exposing backend-stage events for the CLI to present
+
+If a mapping requires the backend to guess intent that should already have been resolved in `parser/` or `semantic/`, the upstream contract should be tightened first.
 
 
 ## Widget Mapping
@@ -27,6 +42,8 @@ Version adapters for LVGL 8.x or other compatibility modes are future work.
 | `Image` | `lv_image_create(parent)` | Source handling depends on the future asset pipeline. |
 | `Card` | `lv_obj_create(parent)` | No dedicated LVGL widget; treated as a styled container preset. |
 
+Only widgets that have been ratified in the current slice should reach backend emission. Broader rows in this table document intended direction, not permission for the backend to accept unvalidated constructs opportunistically.
+
 
 ## Layout Mapping
 
@@ -39,6 +56,8 @@ Planned mapping:
 - `lv_obj_set_flex_align(obj, main, cross, track)` for supported align and justify subsets
 
 The compiler should only expose align/justify values that can be mapped deterministically.
+
+Layout normalization belongs upstream. By the time a layout reaches LVGL mapping, the backend should be consuming explicit canonical intent rather than interpreting ambiguous authored syntax.
 
 ### Grid
 
@@ -67,6 +86,8 @@ TODO:
 | border color | `lv_obj_set_style_border_color` | |
 | font reference | `lv_obj_set_style_text_font` | Asset and declaration flow is future work. |
 
+Style emission should operate on normalized semantic properties. The backend should not decide shorthand expansion, resolve conflicting declarations, or infer property validity on its own.
+
 
 ## Event Mapping
 
@@ -77,6 +98,12 @@ Planned lowering shape:
 - generate a named hook point per emitted widget that has an event reference
 - register with `lv_obj_add_event_cb`
 - keep business logic in user-authored C
+
+Event mapping ownership is split deliberately:
+
+- `semantic/` decides whether an event reference is valid and how it is represented canonically
+- `backend/lvgl_c/` decides how that canonical event metadata becomes LVGL registration code
+- `cli/` owns any operator-facing logging around event-enabled build paths
 
 TODO:
 
@@ -99,6 +126,8 @@ Possible backend patterns later:
 - generated view structs
 - explicit user-driven update calls
 
+Bindings remain a semantic and product-scope decision first. The backend should not invent reactive behavior to compensate for missing upstream contracts.
+
 ## Asset Mapping
 
 Image and font support require a dedicated asset pass and should not be guessed in early backend code.
@@ -108,3 +137,14 @@ TODO:
 - decide conversion responsibility boundaries
 - define generated declarations for image/font assets
 - define cache invalidation strategy for asset outputs
+
+## Backend Observability
+
+Backend observability should help operators understand what the build emitted without changing emitted code content.
+
+Rules:
+
+- backend-stage logs describe file planning, emission progress, and mapping failures only when surfaced through the CLI
+- mapping diagnostics stay actionable and deterministic
+- generated `.c` and `.h` files remain free of progress logging or trace text
+- any future verbose mode should expose additional backend detail through command output, not through generated-file comments added only for tracing

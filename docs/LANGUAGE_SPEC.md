@@ -1,10 +1,16 @@
 # Language Specification v1.0
 
+This specification governs the authored language for Luma UI for LVGL, shortened to LumaUI.
+
 ## Status
 
 This document is intentionally provisional.
 
 The first repository pass does not freeze the LumaUI authored language. Instead, it defines the boundaries that the future language must satisfy so implementation work can begin without committing too early to a concrete grammar.
+
+The language specification also assumes clean stage ownership: syntax belongs to `parser/`, meaning and supported-surface decisions belong to `semantic/`, canonical representation belongs to `ir/`, and LVGL API mapping belongs to `backend/lvgl_c/`. This document describes authored-language intent and boundaries; it does not delegate unresolved language design to downstream code generation.
+
+Language-shaping decisions follow the repository sign-off workflow. The agent may prepare proposals, tradeoff analysis, and supporting research, but ratified language decisions are not considered final until the developer explicitly signs them off.
 
 ## Phase Policy
 
@@ -23,6 +29,8 @@ Meaning:
 ### Rule for the next phase
 
 The next phase should ratify only the syntax needed for the first end-to-end compiler slice.
+
+Before a proposal becomes ratified, the supporting decision material should capture options considered, pros and cons, relevant practices, implementation developments, risks, and open questions for developer review.
 
 Recommended first ratified slice:
 
@@ -54,6 +62,7 @@ The following expectations are considered stable:
 - Identifiers, classes, event references, and binding references will exist.
 - Layout concepts will be limited to primitives that LVGL can represent directly.
 - Arbitrary scripting expressions are out of scope.
+- Operator-facing commands may expose stage-scoped progress and failure information, but authored language behavior must stay distinct from logging and diagnostics presentation.
 
 ## What Is Not Fixed Yet
 
@@ -125,6 +134,8 @@ Specifically, the language should avoid:
 - layout rules that depend on browser formatting contexts
 - runtime expression evaluation in source files
 
+The language must also avoid cross-stage ambiguity. Grammar should not rely on backend inference, and supported-surface rules should not be left implicit for CLI or backend code to reinterpret later.
+
 ## Constraints on Future Grammar Design
 
 When the grammar is finalized, it should preserve the following properties:
@@ -148,6 +159,27 @@ The language should describe intent that can lower directly to LVGL APIs.
 ### Toolability
 
 Diagnostics, formatting, linting, and future editor support should remain feasible.
+
+### Stage Ownership
+
+Grammar decisions should make it obvious which stage owns each responsibility:
+
+- parser decides syntactic validity
+- semantic decides supported-surface validity and normalization
+- IR records canonical intent without syntax quirks
+- backend maps canonical intent to LVGL constructs without guessing upstream meaning
+
+If a proposed language feature weakens those boundaries, it should be reduced or deferred.
+
+### Observability Compatibility
+
+Language design should support clear diagnostics and command observability without making logging part of the authored source model.
+
+This means:
+
+- errors should be attributable to authored files and spans
+- success and progress reporting should happen at command/stage boundaries, not inside the language itself
+- generated output should remain free of ad hoc tracing text added only to compensate for unclear language contracts
 
 ## Illustrative Example Only
 
@@ -196,6 +228,8 @@ The next language phase should produce:
 - selector and property surface definition
 - binding and event reference rules
 - source-to-AST examples with diagnostics
+- stage ownership that stays explicit from syntax through backend mapping
+- command-observability expectations that do not blur language behavior with logging behavior
 
 ## Language Exit Gate for the Next Phase
 
@@ -205,3 +239,5 @@ The next phase should be considered complete when:
 - unsupported syntax is explicitly documented
 - `examples/minimal` is fully expressible within the ratified subset
 - parser implementation work can proceed without guessing intended language behavior
+- stage ownership remains clear enough that parser, semantic, IR, backend, and CLI work can advance without hidden coupling
+- the developer has explicitly signed off on the supporting material for the ratified language slice

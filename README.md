@@ -1,8 +1,12 @@
-# LumaUI
+# Luma UI for LVGL
 
-LumaUI is an open-source compiler project for authoring LVGL user interfaces in a declarative, text-first format and lowering them to deterministic, readable C.
+Luma UI for LVGL, shortened to LumaUI, is an open-source compiler project for authoring LVGL user interfaces in a declarative, text-first format and lowering them to deterministic, readable C.
 
 This repository is the first disciplined pass of the project. It establishes the product framing, compiler architecture, crate boundaries, examples, diagnostics approach, and LVGL backend shape without prematurely freezing the authored language grammar.
+
+It also treats clean stage ownership and operator-visible observability as part of the product design. Compiler stages should stay narrow, and command output should make pipeline progress and failures understandable without leaking logging noise into diagnostics or generated files.
+
+Major language, architecture, mapping, and observability decisions are also handled through an explicit sign-off workflow. The agent should produce supporting research and discussion material, but repository-shaping decisions are not treated as final until the developer reviews and approves them.
 
 ## Current Phase
 
@@ -61,13 +65,15 @@ This repo intentionally prioritizes foundation over breadth.
 ├── AGENTS.md
 ├── docs/
 │   ├── ARCHITECTURE.md
+│   ├── DECISION_BRIEF_TEMPLATE.md
+│   ├── DOCUMENTATION_SCHEME.md
+│   ├── DOCUMENT_RECLASSIFICATION_AUDIT.md
 │   ├── LANGUAGE_SPEC.md
 │   ├── LVGL_MAPPING.md
 │   ├── NEXT_STEPS.md
 │   ├── PRD.md
 │   ├── TASKS.md
-│   ├── one-shot-prompt.md
-│   └── project_specification.md
+│   └── archive/
 ├── cli/
 ├── compiler/
 ├── parser/
@@ -88,6 +94,23 @@ authored source -> AST -> semantic analysis -> IR -> LVGL C backend
 
 The first repo pass includes real scaffolding for each stage, but does not claim the parser or language are feature complete.
 
+Stage ownership is deliberate:
+
+- `compiler/` owns shared config, discovery, diagnostics, and instrumentation contracts
+- `parser/` owns syntax and source-span-aware parse failures
+- `semantic/` owns supported-surface validation and normalization
+- `ir/` owns the canonical backend-facing model
+- `backend/lvgl_c/` owns LVGL emission and generated-file ownership boundaries
+- `cli/` owns operator-facing orchestration, diagnostics presentation, and command logging
+
+If a feature forces multiple adjacent stages to guess each other's responsibilities, the language slice is too broad or the contracts are not explicit enough yet.
+
+When the contracts themselves are under discussion, the expected workflow is:
+
+- prepare decision material with options, pros and cons, relevant practices, risks, and open questions
+- review that material with the developer
+- defer the final call until the developer signs off
+
 ## Provisional Authoring Files
 
 The example `.lui` and `.lus` files in `examples/` are working placeholders for fixture development. They are illustrative, not normative. The project has not yet frozen the final grammar for markup or styles.
@@ -106,11 +129,15 @@ cargo test
 
 `lumaui build` is wired as a compiler-stage command surface, but the source-language frontend is still under active implementation.
 
+Operator-facing commands are expected to remain deterministic and reviewable. Diagnostics should stay stable and actionable, while progress logging should remain stage-scoped and separate from generated output.
+
 ## First-Pass Goals
 
 - keep repo boundaries crisp
 - make future language work easier, not harder
 - keep LVGL mappings conservative and explicit
+- keep stage ownership easy to audit
+- keep command observability useful without noisy output
 - ensure examples, docs, tests, and code tell the same story
 
 ## Phase Roadmap
@@ -138,6 +165,9 @@ The highest-priority work is:
 4. complete one honest end-to-end path from source to generated C
 
 See `NEXT_STEPS.md` for the operational checklist and `TASKS.md` for phased acceptance criteria.
+See `docs/DOCUMENTATION_SCHEME.md` for the canonical filing and housekeeping rules for repository and feature documents.
+See `docs/DECISION_BRIEF_TEMPLATE.md` for the standard decision brief format used for research and sign-off discussions.
+See `AGENTS.md` for the canonical repository-local agent instructions.
 
 ## License
 
