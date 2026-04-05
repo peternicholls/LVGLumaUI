@@ -100,6 +100,15 @@
 - **[Entity 1]**: [What it represents, key attributes without implementation]
 - **[Entity 2]**: [What it represents, relationships to other entities]
 
+## Constitution Alignment *(mandatory)*
+
+- **Active Phase**: [e.g., Phase 1: Language Freeze and Parsing]
+- **Stage Ownership**: [Which crates or docs are in scope and why]
+- **LVGL Mapping**: [Named LVGL 9.x primitive or API family, or N/A for docs-only work]
+- **Grammar Status**: [Already ratified in `docs/LANGUAGE_SPEC.md` / requires ratification first / N/A]
+- **Docs/Fixtures/Tests Impact**: [List the docs, examples, tests, and snapshots that must change together]
+- **Explicit Deferrals**: [Anything intentionally deferred to preserve a narrow, ratified slice]
+
 ## Success Criteria *(mandatory)*
 
 <!--

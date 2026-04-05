@@ -8,7 +8,9 @@ description: "Task list template for feature implementation"
 **Input**: Design documents from `/specs/[###-feature-name]/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
-**Tests**: The examples below include test tasks. Tests are OPTIONAL - only include them if explicitly requested in the feature specification.
+**Tests**: Tests are REQUIRED whenever parser behavior, semantic validation,
+IR shape, backend output, diagnostics, examples, or generated artifacts change.
+Omit them only for docs-only work, and state that justification explicitly.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
@@ -20,10 +22,12 @@ description: "Task list template for feature implementation"
 
 ## Path Conventions
 
-- **Single project**: `src/`, `tests/` at repository root
-- **Web app**: `backend/src/`, `frontend/src/`
-- **Mobile**: `api/src/`, `ios/src/` or `android/src/`
-- Paths shown below assume single project - adjust based on plan.md structure
+- **Compiler crates**: `cli/`, `compiler/`, `parser/`, `semantic/`, `ir/`,
+  `backend/lvgl_c/`
+- **Project docs**: `docs/`
+- **Golden fixtures**: `examples/`
+- **Regression coverage**: `tests/` and crate-local tests under each touched
+  workspace member
 
 <!-- 
   ============================================================================
@@ -46,11 +50,11 @@ description: "Task list template for feature implementation"
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-**Purpose**: Project initialization and basic structure
+**Purpose**: Ratification and setup work shared across the feature slice
 
-- [ ] T001 Create project structure per implementation plan
-- [ ] T002 Initialize [language] project with [framework] dependencies
-- [ ] T003 [P] Configure linting and formatting tools
+- [ ] T001 Confirm active phase and exit gate in docs/TASKS.md and docs/NEXT_STEPS.md
+- [ ] T002 Ratify or update affected language or mapping docs in docs/
+- [ ] T003 [P] Add or update fixture inputs in examples/ for the target slice
 
 ---
 
@@ -60,14 +64,14 @@ description: "Task list template for feature implementation"
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-Examples of foundational tasks (adjust based on your project):
+Examples of foundational tasks (adjust based on the affected compiler stage):
 
-- [ ] T004 Setup database schema and migrations framework
-- [ ] T005 [P] Implement authentication/authorization framework
-- [ ] T006 [P] Setup API routing and middleware structure
-- [ ] T007 Create base models/entities that all stories depend on
-- [ ] T008 Configure error handling and logging infrastructure
-- [ ] T009 Setup environment configuration management
+- [ ] T004 Update shared diagnostics, config, or project loading contracts in compiler/
+- [ ] T005 [P] Add parser coverage in parser/tests or parser/src/
+- [ ] T006 [P] Add semantic or IR validation coverage in semantic/ or ir/
+- [ ] T007 Document LVGL mapping decisions in docs/LVGL_MAPPING.md
+- [ ] T008 Define snapshot or golden-test expectations in tests/ or backend/lvgl_c/tests/
+- [ ] T009 Confirm example claims do not exceed the ratified surface
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -79,21 +83,21 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 1 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 1 ⚠️
 
-> **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
+> **NOTE: Add failing tests, fixtures, or snapshots before implementation when behavior changes**
 
-- [ ] T010 [P] [US1] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T011 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T010 [P] [US1] Add parser, semantic, or backend regression coverage in [exact path]
+- [ ] T011 [P] [US1] Add or update fixture or snapshot coverage in [exact path]
 
 ### Implementation for User Story 1
 
-- [ ] T012 [P] [US1] Create [Entity1] model in src/models/[entity1].py
-- [ ] T013 [P] [US1] Create [Entity2] model in src/models/[entity2].py
-- [ ] T014 [US1] Implement [Service] in src/services/[service].py (depends on T012, T013)
-- [ ] T015 [US1] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T016 [US1] Add validation and error handling
-- [ ] T017 [US1] Add logging for user story 1 operations
+- [ ] T012 [P] [US1] Implement stage-local changes in [exact crate path]
+- [ ] T013 [P] [US1] Implement supporting contracts in [exact crate path]
+- [ ] T014 [US1] Integrate the slice across the minimum required stages only
+- [ ] T015 [US1] Update docs or examples required for the new supported surface
+- [ ] T016 [US1] Add validation and deterministic diagnostics
+- [ ] T017 [US1] Verify generated output or normalized models remain stable
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -105,17 +109,17 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 2 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 2 ⚠️
 
-- [ ] T018 [P] [US2] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T019 [P] [US2] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T018 [P] [US2] Add regression coverage in [exact path]
+- [ ] T019 [P] [US2] Add or update fixture or snapshot coverage in [exact path]
 
 ### Implementation for User Story 2
 
-- [ ] T020 [P] [US2] Create [Entity] model in src/models/[entity].py
-- [ ] T021 [US2] Implement [Service] in src/services/[service].py
-- [ ] T022 [US2] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T023 [US2] Integrate with User Story 1 components (if needed)
+- [ ] T020 [P] [US2] Implement stage-local changes in [exact crate path]
+- [ ] T021 [US2] Update dependent compiler contracts in [exact crate path]
+- [ ] T022 [US2] Implement the user-visible feature in [exact crate path]
+- [ ] T023 [US2] Update docs, mappings, or examples that define the slice
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -127,16 +131,16 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 3 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 3 ⚠️
 
-- [ ] T024 [P] [US3] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T025 [P] [US3] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T024 [P] [US3] Add regression coverage in [exact path]
+- [ ] T025 [P] [US3] Add or update fixture or snapshot coverage in [exact path]
 
 ### Implementation for User Story 3
 
-- [ ] T026 [P] [US3] Create [Entity] model in src/models/[entity].py
-- [ ] T027 [US3] Implement [Service] in src/services/[service].py
-- [ ] T028 [US3] Implement [endpoint/feature] in src/[location]/[file].py
+- [ ] T026 [P] [US3] Implement stage-local changes in [exact crate path]
+- [ ] T027 [US3] Update dependent compiler contracts in [exact crate path]
+- [ ] T028 [US3] Implement the user-visible feature in [exact crate path]
 
 **Checkpoint**: All user stories should now be independently functional
 
@@ -152,10 +156,10 @@ Examples of foundational tasks (adjust based on your project):
 
 - [ ] TXXX [P] Documentation updates in docs/
 - [ ] TXXX Code cleanup and refactoring
-- [ ] TXXX Performance optimization across all stories
-- [ ] TXXX [P] Additional unit tests (if requested) in tests/unit/
-- [ ] TXXX Security hardening
-- [ ] TXXX Run quickstart.md validation
+- [ ] TXXX Determinism or snapshot stability verification
+- [ ] TXXX [P] Additional crate-level or snapshot tests in tests/ or crate-local tests/
+- [ ] TXXX Review escape-hatch, mapping, and generated-output implications
+- [ ] TXXX Validate the updated example or quickstart flow
 
 ---
 
@@ -178,9 +182,9 @@ Examples of foundational tasks (adjust based on your project):
 
 ### Within Each User Story
 
-- Tests (if included) MUST be written and FAIL before implementation
-- Models before services
-- Services before endpoints
+- Tests, fixtures, or snapshots MUST be added and fail before implementation
+- Shared contracts before downstream stage integrations
+- Stage-local implementation before cross-stage wiring
 - Core implementation before integration
 - Story complete before moving to next priority
 
@@ -199,12 +203,12 @@ Examples of foundational tasks (adjust based on your project):
 
 ```bash
 # Launch all tests for User Story 1 together (if tests requested):
-Task: "Contract test for [endpoint] in tests/contract/test_[name].py"
-Task: "Integration test for [user journey] in tests/integration/test_[name].py"
+Task: "Add parser, semantic, or backend regression coverage in [exact path]"
+Task: "Add or update fixture or snapshot coverage in [exact path]"
 
 # Launch all models for User Story 1 together:
-Task: "Create [Entity1] model in src/models/[entity1].py"
-Task: "Create [Entity2] model in src/models/[entity2].py"
+Task: "Implement stage-local changes in [exact crate path]"
+Task: "Implement supporting contracts in [exact crate path]"
 ```
 
 ---
@@ -245,7 +249,7 @@ With multiple developers:
 - [P] tasks = different files, no dependencies
 - [Story] label maps task to specific user story for traceability
 - Each user story should be independently completable and testable
-- Verify tests fail before implementing
+- Verify tests, fixtures, or snapshots fail before implementing
 - Commit after each task or logical group
 - Stop at any checkpoint to validate story independently
 - Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence

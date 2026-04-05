@@ -12,6 +12,7 @@ First-pass planning assumes LVGL 9.x.
 
 Version adapters for LVGL 8.x or other compatibility modes are future work.
 
+
 ## Widget Mapping
 
 | LumaUI widget | LVGL construct | Notes |
@@ -25,6 +26,7 @@ Version adapters for LVGL 8.x or other compatibility modes are future work.
 | `Button` | `lv_button_create(parent)` | Child text is typically emitted as a nested label. |
 | `Image` | `lv_image_create(parent)` | Source handling depends on the future asset pipeline. |
 | `Card` | `lv_obj_create(parent)` | No dedicated LVGL widget; treated as a styled container preset. |
+
 
 ## Layout Mapping
 
@@ -64,6 +66,7 @@ TODO:
 | border width | `lv_obj_set_style_border_width` | |
 | border color | `lv_obj_set_style_border_color` | |
 | font reference | `lv_obj_set_style_text_font` | Asset and declaration flow is future work. |
+
 
 ## Event Mapping
 

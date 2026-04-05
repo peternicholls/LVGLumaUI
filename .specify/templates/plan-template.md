@@ -31,7 +31,21 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- [ ] The proposal preserves the compile-time-only path and does not introduce
+  runtime interpretation, DOM-style mutation, or browser-only semantics.
+- [ ] Every new widget, property, event surface, or layout rule maps cleanly to
+  a named LVGL 9.x primitive or API family, or is explicitly deferred in
+  `docs/LVGL_MAPPING.md`.
+- [ ] The impacted crates respect stage boundaries (`compiler/`, `parser/`,
+  `semantic/`, `ir/`, `backend/lvgl_c/`, `cli/`). If multiple stages must be
+  redesigned at once, the slice has been reduced first.
+- [ ] Any syntax or property-surface change is already ratified in
+  `docs/LANGUAGE_SPEC.md`, or this plan stops at ratification work instead of
+  implementing unratified grammar.
+- [ ] The active phase and exit gate from `docs/TASKS.md` and `docs/NEXT_STEPS.md`
+  are identified and preserved.
+- [ ] Required updates to docs, examples, fixtures, and tests or snapshots are
+  listed explicitly in this plan.
 
 ## Project Structure
 
@@ -48,51 +62,22 @@ specs/[###-feature]/
 ```
 
 ### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
 
 ```text
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
-
+cli/
+compiler/
+parser/
+semantic/
+ir/
+backend/lvgl_c/
+docs/
+examples/
 tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
-
-frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
 ```
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+**Structure Decision**: Identify the exact crates, docs, examples, and tests
+touched by the feature. Plans MUST explain why each touched stage is in scope
+and why adjacent stages do not need redesign.
 
 ## Complexity Tracking
 
@@ -100,5 +85,5 @@ directories captured above]
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+| [e.g., unratified grammar work] | [current need] | [why ratification-first was insufficient] |
+| [e.g., multi-stage redesign] | [specific problem] | [why a narrower compiler slice was insufficient] |
