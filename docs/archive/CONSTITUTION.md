@@ -2,13 +2,15 @@
 
 ## Status
 
-This is the authoritative governing document for the LVGLuamUI repository.
+This is an archived historical copy of the repository constitution and is not
+the active governing document.
 
-The Speckit execution copy lives at `.specify/memory/constitution.md`.
-Amendments MUST update both files in the same change so planning and execution
-rules stay aligned.
+The active governing copy lives at `.specify/memory/constitution.md`.
+This archived copy may lag behind active governance and should be used for
+historical context only.
 
-When any other document contradicts this one, this document wins.
+When archived wording conflicts with `.specify/memory/constitution.md`, the
+Speckit execution copy wins.
 
 ---
 

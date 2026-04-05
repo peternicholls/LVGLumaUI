@@ -23,7 +23,7 @@ As a LumaUI maintainer, I need the brownfield repository to define one narrow, e
 
 **Acceptance Scenarios**:
 
-1. **Given** the docs directory contains both governing rules and provisional guidance, **When** maintainers review the ratified brownfield spec, **Then** they can identify that `CONSTITUTION.md` is the governing authority, the repo is currently in Phase 0 with a Phase 1 language-freeze transition ahead, and the first thin slice is defined as an explicit supported contract rather than an inferred intent.
+1. **Given** the repository contains both governing rules and provisional guidance, **When** maintainers review the ratified brownfield spec, **Then** they can identify that `.specify/memory/constitution.md` is the governing authority, the repo is currently in Phase 0 with a Phase 1 language-freeze transition ahead, and the first thin slice is defined as an explicit supported contract rather than an inferred intent.
 2. **Given** a provisional example, aspirational document, or fixture conflicts with the ratified thin slice, **When** maintainers decide whether the construct is in scope, **Then** the governing document hierarchy and the ratified slice take precedence and the conflicting construct is marked as deferred, rejected, or aspirational instead of silently accepted.
 3. **Given** the first supported slice is approved, **When** a reviewer examines the language contract, **Then** they can see the exact supported widgets, selectors, identifiers, minimal style surface, event-reference policy, and binding deferral policy for the first end-to-end path.
 
@@ -61,7 +61,7 @@ As a firmware team integrating generated UI code, I need one minimal example to 
 
 ### Edge Cases
 
-- What happens when `CONSTITUTION.md` and another planning document appear to disagree? The constitution remains the governing authority and the spec must treat the lower-priority document as subordinate guidance that needs alignment.
+- What happens when `.specify/memory/constitution.md` and another planning document appear to disagree? The constitution remains the governing authority and the spec must treat the lower-priority document as subordinate guidance that needs alignment.
 - What happens when `examples/minimal` uses a construct that is not explicitly ratified? The construct must be documented, either added to the supported first slice through explicit ratification or removed from the normative example.
 - What happens when `examples/dashboard` or another aspirational fixture uses deferred widgets or properties? The fixture must be labeled aspirational or expected-fail until the supported slice expands to include those constructs.
 - What happens when provisional `.lui` or `.lus` examples imply syntax that the ratified subset does not adopt? The ratified grammar wins and the provisional form must be updated, rejected, or clearly marked non-normative.
@@ -74,12 +74,12 @@ As a firmware team integrating generated UI code, I need one minimal example to 
 
 ### Functional Requirements
 
-- **FR-001**: The brownfield specification MUST treat the docs directory as the authoritative source corpus for intent and planning, with `docs/CONSTITUTION.md` as the governing authority when any other document conflicts.
+- **FR-001**: The brownfield specification MUST treat `.specify/memory/constitution.md` as the governing authority for intent and planning, with `docs/` and `README.md` serving as aligned subordinate source material when any lower-priority document conflicts with the constitution.
 - **FR-002**: The feature MUST reflect the current repository baseline accurately: Phase 0 Foundation is substantially complete, the authored language remains provisional, and this brownfield slice exists to satisfy the entry assumptions and exit goals for Phase 1 rather than to claim later phases are already complete.
 - **FR-003**: The feature MUST ratify the exact first-slice markup grammar and the exact first-slice style grammar needed for one honest end-to-end compiler path.
 - **FR-004**: The ratified first slice MUST explicitly define the supported widget set, identifier and class support, selector surface, text usage, and minimal property surface for the normative minimal example.
 - **FR-005**: The ratified first slice MUST explicitly define the accepted named event handler reference form for the MVP path and MUST explicitly defer bindings from the first slice, including how binding usage is rejected during validation.
-- **FR-006**: The supported first slice MUST remain narrow enough that it does not force simultaneous redesign of parser, semantic, IR, and backend layers beyond the thin-slice sequencing described in the brownfield docs.
+- **FR-006**: *(Phase-gate constraint)* The supported first slice MUST remain narrow enough that it does not force simultaneous redesign of parser, semantic, IR, and backend layers beyond the thin-slice sequencing described in the brownfield docs. This is enforced by the Phase dependency rules in `tasks.md` and is not an independently testable requirement; it does not require a dedicated test, fixture, or acceptance scenario.
 - **FR-007**: The feature MUST document the phase-gated delivery order for this slice: ratify language first, then parser work, then semantic validation and lowering, then one backend path, then fixture and stability alignment.
 - **FR-008**: `examples/minimal` MUST be treated as the first normative fixture for the ratified slice, and every construct it uses MUST be either explicitly supported by the slice or removed from the normative path.
 - **FR-009**: The system MUST allow users to validate a project that stays within the ratified first slice and return a success outcome only when both screen and style sources conform to the documented subset.
@@ -130,7 +130,6 @@ As a firmware team integrating generated UI code, I need one minimal example to 
 - **SC-004**: One normative minimal example can be built from authored source into generated screen artifacts through a repeatable workflow that requires no manual C translation.
 - **SC-005**: Re-running generation for unchanged normative input produces no unintended differences in generated screen artifacts.
 - **SC-006**: Maintainers can distinguish normative fixtures from aspirational fixtures in one review pass across docs, examples, tests, and snapshots.
-- **SC-007**: The next implementation sequence can proceed from ratified language scope through parser, semantic, backend, and fixture-stability work without requiring a scope-expanding redesign of multiple stages at once.
 
 ## Assumptions
 
@@ -139,3 +138,4 @@ As a firmware team integrating generated UI code, I need one minimal example to 
 - The first ratified subset should remain small enough to prioritize `Screen`, `Column`, `Row`, `Text`, `Button`, identifiers, classes, a tiny style surface, and named event handler references before broader widgets, layout forms, bindings, or preview concerns are reconsidered.
 - Existing aspirational examples may remain in the repository, but they must be labeled or handled in a way that does not imply support beyond the ratified first slice.
 - Users of this phase expect text-first workflows, deterministic outputs, and source-located diagnostics rather than runtime preview behavior, asset-pipeline breadth, or browser-style convenience features.
+- The phase-gate dependency rules in `tasks.md` are sufficient to enforce narrow-slice sequencing. Proceeding without requiring multi-stage redesign is an execution constraint, not a measurable outcome, and does not require its own test or fixture.

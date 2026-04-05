@@ -16,8 +16,8 @@ Templates requiring updates:
 - ✅ .specify/templates/plan-template.md
 - ✅ .specify/templates/spec-template.md
 - ✅ .specify/templates/tasks-template.md
-- ✅ docs/CONSTITUTION.md
-- ✅ docs/intent.md
+- ✅ docs/archive/CONSTITUTION.md
+- ✅ docs/archive/intent.md
 Follow-up TODOs:
 - None
 -->
@@ -107,8 +107,9 @@ speculative breadth, and preserves one coherent story across `docs/`,
 
 This constitution operationalizes the repository rules for Speckit workflows and
 supersedes conflicting defaults in generated plan, spec, and task artifacts.
-`docs/CONSTITUTION.md` is the narrative companion for the repo and MUST remain
-materially aligned with this file.
+`docs/archive/CONSTITUTION.md` is an archival narrative companion for historical
+context only and MUST NOT be treated as the active governing file unless it is
+explicitly restored.
 
 Amendments MUST identify the changed section, explain why the change is needed,
 and update any affected docs, fixtures, tests, and templates in the same change.

@@ -8,7 +8,7 @@ Use this flow to move the repository from a provisional frontend scaffold to one
 
 - Stable Rust toolchain installed with `rustfmt` and `clippy`
 - Working tree checked out on branch `001-brownfield-spec`
-- Repo docs reviewed, especially `docs/CONSTITUTION.md`, `docs/LANGUAGE_SPEC.md`, `docs/TASKS.md`, `docs/NEXT_STEPS.md`, and `docs/LVGL_MAPPING.md`
+- Repo docs reviewed, especially `.specify/memory/constitution.md`, `docs/LANGUAGE_SPEC.md`, `docs/TASKS.md`, `docs/NEXT_STEPS.md`, and `docs/LVGL_MAPPING.md`
 
 ## Working Rules
 

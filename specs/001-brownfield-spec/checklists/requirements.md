@@ -31,7 +31,7 @@
 
 ## Notes
 
-- Validated against the brownfield source documents in `docs/`, with the spec now explicitly preserving the document hierarchy: `CONSTITUTION.md` governs, while `LANGUAGE_SPEC.md`, `TASKS.md`, `NEXT_STEPS.md`, `ARCHITECTURE.md`, `LVGL_MAPPING.md`, and `README.md` provide aligned subordinate planning context.
+- Validated against the brownfield source documents and governing constitution, with the spec now explicitly preserving the document hierarchy: `.specify/memory/constitution.md` governs, while `docs/LANGUAGE_SPEC.md`, `docs/TASKS.md`, `docs/NEXT_STEPS.md`, `docs/ARCHITECTURE.md`, `docs/LVGL_MAPPING.md`, and `README.md` provide aligned subordinate planning context.
 - The spec now reflects the repo's actual baseline as Phase 0 Foundation at the Phase 0 / Phase 1 boundary, instead of implying that later phases are already active.
 - The spec now captures the phase-gated delivery order drawn from `TASKS.md` and `NEXT_STEPS.md`: language ratification, parser gate, semantic gate, backend gate, and fixture-stability alignment.
 - No clarification markers remain because the current docs provide a consistent next-step direction: ratify the smallest supported subset, make `examples/minimal` normative, defer bindings from the first slice, and complete one minimal end-to-end compile path while preserving explicit deferrals.
