@@ -81,15 +81,16 @@ As a firmware team integrating generated UI code, I need one minimal example to 
 - **FR-005**: The ratified first slice MUST explicitly define the accepted named event handler reference form for the MVP path and MUST explicitly defer bindings from the first slice, including how binding usage is rejected during validation.
 - **FR-006**: *(Phase-gate constraint)* The supported first slice MUST remain narrow enough that it does not force simultaneous redesign of parser, semantic, IR, and backend layers beyond the thin-slice sequencing described in the brownfield docs. This is enforced by the Phase dependency rules in `tasks.md` and is not an independently testable requirement; it does not require a dedicated test, fixture, or acceptance scenario.
 - **FR-007**: The feature MUST document the phase-gated delivery order for this slice: ratify language first, then parser work, then semantic validation and lowering, then one backend path, then fixture and stability alignment.
-- **FR-008**: `examples/minimal` MUST be treated as the first normative fixture for the ratified slice, and every construct it uses MUST be either explicitly supported by the slice or removed from the normative path.
-- **FR-009**: The system MUST allow users to validate a project that stays within the ratified first slice and return a success outcome only when both screen and style sources conform to the documented subset.
-- **FR-010**: The system MUST reject malformed syntax, unknown widgets, unsupported properties, duplicate identifiers, binding usage, and other out-of-scope authored constructs with actionable diagnostics that identify source context and corrective direction.
-- **FR-011**: The semantic contract for the first slice MUST include duplicate-identity checks, supported widget validation, supported property validation, explicit event reference representation, and lowering of valid input into a canonical IR free of syntax-specific ambiguity.
-- **FR-012**: Users MUST be able to build at least one normative minimal example from authored source into generated LVGL screen artifacts without manual translation steps once the language, parser, and semantic gates for the slice are satisfied.
-- **FR-013**: Generated output for the ratified slice MUST remain deterministic, readable, and compatible with the documented hybrid ownership model for compiler-owned and user-owned regions.
-- **FR-014**: The repository MUST distinguish normative fixtures that are expected to pass in the current slice from aspirational fixtures that remain ahead of implementation, and that distinction MUST be visible in docs, examples, tests, and snapshots.
-- **FR-015**: The feature MUST keep the supported language surface aligned across `docs/LANGUAGE_SPEC.md`, `docs/TASKS.md`, `docs/NEXT_STEPS.md`, `docs/ARCHITECTURE.md`, `docs/LVGL_MAPPING.md`, `README.md`, normative examples, parser and semantic tests, and generated snapshots so the repository tells one consistent brownfield story.
-- **FR-016**: The feature MUST preserve explicit deferrals for unratified grammar, browser-like semantics, preview workflows, asset-pipeline expansion, wider widget support, richer style complexity, and LVGL 8.x compatibility until later phases ratify them.
+- **FR-008**: The feature MUST define the Git execution model for that phase-gated delivery order: `001-brownfield-spec` is the feature integration branch, each phase is implemented on its own child branch created from the current `001-brownfield-spec` tip, each phase lands by pull request into `001-brownfield-spec`, and the next phase branch is cut only after the previous phase PR merges.
+- **FR-009**: `examples/minimal` MUST be treated as the first normative fixture for the ratified slice, and every construct it uses MUST be either explicitly supported by the slice or removed from the normative path.
+- **FR-010**: The system MUST allow users to validate a project that stays within the ratified first slice and return a success outcome only when both screen and style sources conform to the documented subset.
+- **FR-011**: The system MUST reject malformed syntax, unknown widgets, unsupported properties, duplicate identifiers, binding usage, and other out-of-scope authored constructs with actionable diagnostics that identify source context and corrective direction.
+- **FR-012**: The semantic contract for the first slice MUST include duplicate-identity checks, supported widget validation, supported property validation, explicit event reference representation, and lowering of valid input into a canonical IR free of syntax-specific ambiguity.
+- **FR-013**: Users MUST be able to build at least one normative minimal example from authored source into generated LVGL screen artifacts without manual translation steps once the language, parser, and semantic gates for the slice are satisfied.
+- **FR-014**: Generated output for the ratified slice MUST remain deterministic, readable, and compatible with the documented hybrid ownership model for compiler-owned and user-owned regions.
+- **FR-015**: The repository MUST distinguish normative fixtures that are expected to pass in the current slice from aspirational fixtures that remain ahead of implementation, and that distinction MUST be visible in docs, examples, tests, and snapshots.
+- **FR-016**: The feature MUST keep the supported language surface aligned across `docs/LANGUAGE_SPEC.md`, `docs/TASKS.md`, `docs/NEXT_STEPS.md`, `docs/ARCHITECTURE.md`, `docs/LVGL_MAPPING.md`, `README.md`, normative examples, parser and semantic tests, and generated snapshots so the repository tells one consistent brownfield story.
+- **FR-017**: The feature MUST preserve explicit deferrals for unratified grammar, browser-like semantics, preview workflows, asset-pipeline expansion, wider widget support, richer style complexity, and LVGL 8.x compatibility until later phases ratify them.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -97,6 +98,7 @@ As a firmware team integrating generated UI code, I need one minimal example to 
 - **Ratified First Slice**: The explicitly supported authored-language subset for the first end-to-end path, including exact grammar rules, permitted widgets, selectors, identifiers, accepted event references, and the explicit exclusion of bindings.
 - **Normative Fixture**: A repository example that is expected to validate or build successfully in the current ratified slice and therefore acts as a trusted acceptance artifact.
 - **Aspirational Fixture**: A repository example that intentionally stays ahead of current implementation and must be clearly labeled so it does not imply unsupported behavior is already part of the slice.
+- **Phase Branch**: A short-lived child branch created from `001-brownfield-spec` for one delivery phase only, reviewed independently, and merged back into `001-brownfield-spec` by pull request before the next phase begins.
 - **Authored Project**: A LumaUI project composed of configuration, screen source files, and style source files that serves as the user-facing input to validation and build workflows.
 - **Canonical IR**: The backend-facing representation of valid authored input after unsupported constructs, duplicate identities, and ambiguous declarations have been resolved or rejected.
 - **Generated Screen Artifact**: The emitted LVGL C screen output owned by the compiler except for explicitly delimited user-owned escape-hatch regions.
@@ -119,6 +121,14 @@ As a firmware team integrating generated UI code, I need one minimal example to 
 3. **Semantic Gate**: Validate duplicate identifiers, supported widgets, supported properties, and event references; normalize supported declarations; and lower valid authored input into canonical IR.
 4. **Backend Gate**: Build one normative minimal example from the canonical IR into deterministic, reviewable LVGL output that honors the documented ownership model and mapping constraints.
 5. **Examples and Stability Gate**: Keep normative fixtures trustworthy, keep aspirational fixtures clearly marked, and align docs, tests, and snapshots every time the slice grows.
+
+## Branch and PR Workflow
+
+1. `001-brownfield-spec` is the integration branch for this feature slice.
+2. Each phase is implemented on its own child branch created from the current tip of `001-brownfield-spec`.
+3. Each phase branch opens a pull request with base `001-brownfield-spec`, not `master`.
+4. The next phase branch is created only after the previous phase PR merges into `001-brownfield-spec`.
+5. Phase branches should use descriptive names such as `001-brownfield-spec/phase-1-setup`, `001-brownfield-spec/phase-2-us1-ratification`, and `001-brownfield-spec/phase-3-foundation` so review scope stays obvious.
 
 ## Success Criteria *(mandatory)*
 

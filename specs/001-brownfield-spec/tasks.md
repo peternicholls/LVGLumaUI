@@ -149,6 +149,14 @@
 - **Phase 5: User Story 3**: Depends on Phase 4; backend generation requires parsed and semantically validated canonical IR.
 - **Phase 6: Polish**: Depends on the stories you want to ship being complete.
 
+### Branch and PR Workflow
+
+- `001-brownfield-spec` is the integration branch for this feature.
+- Execute each phase on its own child branch created from the current tip of `001-brownfield-spec`.
+- Open every phase PR against `001-brownfield-spec`, not `master`.
+- Create the next phase branch only after the previous phase PR merges so later work inherits the reviewed feature baseline.
+- Prefer descriptive phase branch names such as `001-brownfield-spec/phase-1-setup`, `001-brownfield-spec/phase-2-us1-ratification`, `001-brownfield-spec/phase-3-foundation`, `001-brownfield-spec/phase-4-us2-validation`, `001-brownfield-spec/phase-5-us3-build`, and `001-brownfield-spec/phase-6-polish`.
+
 ### User Story Dependencies
 
 - **User Story 1 (P1)**: Starts after Setup and is the MVP contract freeze.
@@ -214,15 +222,17 @@ Task: T030 Add build-command smoke coverage for the minimal project, success/fai
 
 1. Complete Phase 1: Setup.
 2. Complete Phase 2: User Story 1.
-3. Stop and validate that docs, fixture labels, and starter content all describe the same supported first slice.
+3. Merge the phase branch into `001-brownfield-spec` by PR.
+4. Stop and validate that docs, fixture labels, and starter content all describe the same supported first slice.
 
 ### Incremental Delivery
 
 1. Finish Setup and User Story 1 to ratify the first slice and classify fixtures.
-2. Finish Foundational work to stabilize shared diagnostics, discovery, AST, IR, and fixture/snapshot participation rules.
-3. Deliver User Story 2 to make `validate` trustworthy for the ratified slice.
-4. Deliver User Story 3 to make `build` produce stable LVGL output from the validated slice with explicit ownership boundaries.
-5. Finish Polish to keep docs, fixtures, tests, and snapshots aligned.
+2. Merge that phase work into `001-brownfield-spec` and branch the next phase from the updated integration tip.
+3. Finish Foundational work to stabilize shared diagnostics, discovery, AST, IR, and fixture/snapshot participation rules.
+4. Deliver User Story 2 to make `validate` trustworthy for the ratified slice.
+5. Deliver User Story 3 to make `build` produce stable LVGL output from the validated slice with explicit ownership boundaries.
+6. Finish Polish to keep docs, fixtures, tests, and snapshots aligned.
 
 ### Suggested Team Split
 
@@ -239,6 +249,7 @@ Task: T030 Add build-command smoke coverage for the minimal project, success/fai
 - User Story 1 is the suggested MVP because it freezes the contract that every later story depends on.
 - Foundational work now follows ratification so the task order matches the constitution’s ratification-first rule.
 - User Story 3 now carries explicit ownership-boundary and aspirational-fixture visibility work so generated-output and snapshot expectations are fully represented.
+- The execution model is phase branch -> PR into `001-brownfield-spec` -> next phase branch, which keeps review scope aligned with the documented phase gates.
 - Logging is part of the software design surface for operator-facing commands, so tasks that shape command orchestration, diagnostics, or backend execution should treat logging behavior as testable contract work rather than ad hoc debugging output.
 - Documentation changes should stay synchronized with implementation, tests, fixtures, and roadmap state so the repository remains reviewable without tribal knowledge.
 - Research and recommendation material should inform major decisions, but developer sign-off is the authority that finalizes them.

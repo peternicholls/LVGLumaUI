@@ -7,11 +7,13 @@ Use this flow to move the repository from a provisional frontend scaffold to one
 ## Prerequisites
 
 - Stable Rust toolchain installed with `rustfmt` and `clippy`
-- Working tree checked out on branch `001-brownfield-spec`
+- Local access to the feature integration branch `001-brownfield-spec`
 - Repo docs reviewed, especially `.specify/memory/constitution.md`, `docs/LANGUAGE_SPEC.md`, `docs/TASKS.md`, `docs/NEXT_STEPS.md`, and `docs/LVGL_MAPPING.md`
 
 ## Working Rules
 
+- Treat `001-brownfield-spec` as the feature integration branch, not the default branch for direct implementation work.
+- Create one child branch per delivery phase from the current tip of `001-brownfield-spec`, open its PR back into `001-brownfield-spec`, and cut the next phase branch only after that PR merges.
 - Start each code-bearing step by adding or updating a failing test, fixture, snapshot, or command-level assertion before implementation.
 - Keep helpers and modules single-purpose so parser, semantic, IR, backend, and CLI boundaries stay readable and testable.
 - Treat diagnostics and logging as stable operator-facing behavior: logs should describe stage progress and failure paths without contaminating generated output or deterministic error text.
@@ -19,6 +21,20 @@ Use this flow to move the repository from a provisional frontend scaffold to one
 - Keep terminology consistent across docs so ratified behavior, deferred work, and aspirational examples are easy to distinguish.
 - For major stage decisions, prepare supporting discussion material before locking in implementation: options, pros/cons, relevant practices, implementation developments, risks, and open questions.
 - Do not treat stage-shaping decisions as final until the developer reviews the material and explicitly signs off.
+
+- Name phase branches so review scope is obvious, for example `001-brownfield-spec/phase-1-setup` or `001-brownfield-spec/phase-4-us2-validation`.
+
+## Step 0: Create the current phase branch
+
+Before changing files for a phase, sync the integration branch and cut a child branch for that phase:
+
+```bash
+git checkout 001-brownfield-spec
+git pull origin 001-brownfield-spec
+git checkout -b 001-brownfield-spec/phase-<n>-<scope>
+```
+
+When the phase is ready for review, push the child branch and open a pull request with base `001-brownfield-spec`. Do not start the next phase branch until that PR lands.
 
 ## Step 1: Confirm the active phase and target slice
 
@@ -164,3 +180,4 @@ The brownfield MVP slice is complete when:
 5. Docs, examples, tests, snapshots, and operator-visible logging all reflect the same supported surface.
 6. Documentation is concise, terminology-consistent, and explicit about what is ratified versus deferred.
 7. Major stage decisions taken during the slice were backed by written discussion material and explicit developer sign-off.
+8. Each implementation phase landed through its own pull request into `001-brownfield-spec`.
