@@ -100,6 +100,93 @@ This repository pass intentionally stops short of final language design. It prov
 - LVGL backend scaffolding
 - examples and test fixtures
 
+## Delivery Phases
+
+LumaUI should be delivered in explicit phases. Each phase must leave the repo in a coherent state and should not assume completion of later phases.
+
+### Phase 0: Foundation
+
+Purpose:
+Establish repo structure, crate boundaries, documentation, examples, and compiler scaffolding.
+
+Includes:
+
+- documentation pack
+- Rust workspace
+- config loading
+- source discovery
+- diagnostics types
+- provisional frontend and backend scaffolding
+
+Excludes:
+
+- final grammar
+- end-to-end code generation from real source
+- preview integration
+
+### Phase 1: Language Freeze and Parsing
+
+Purpose:
+Ratify the narrow MVP grammar and implement real parsing.
+
+Includes:
+
+- final syntax for the first supported subset
+- parser diagnostics
+- AST construction
+- parser tests
+
+Phase rule:
+Do not widen the language surface until one narrow subset is parsed well.
+
+### Phase 2: Semantic Analysis and IR
+
+Purpose:
+Resolve parsed syntax into a typed, backend-ready model.
+
+Includes:
+
+- duplicate id checks
+- supported widget validation
+- property validation and normalization
+- explicit event and binding representation
+- lowering into canonical IR
+
+### Phase 3: LVGL C Backend
+
+Purpose:
+Generate deterministic, readable LVGL C for the ratified MVP subset.
+
+Includes:
+
+- file planning
+- stable symbol naming
+- emitted screen construction code
+- backend snapshots
+
+### Phase 4: Examples, Tests, and Stability
+
+Purpose:
+Treat examples and tests as product artifacts rather than afterthoughts.
+
+Includes:
+
+- golden examples
+- parser regression tests
+- semantic regression tests
+- generated C snapshot tests
+
+### Phase 5: Preview
+
+Purpose:
+Add a preview path only after the compiler path is trustworthy.
+
+Includes:
+
+- LVGL SDL-oriented preview orchestration
+- clear prerequisite checks
+- optional preview flow that does not redefine compiler semantics
+
 ## Command Surface
 
 The CLI is designed around these commands:
@@ -127,3 +214,14 @@ This first pass is successful when:
 - the docs agree on scope and non-goals
 - examples and tests provide realistic fixtures
 - later work can proceed without re-litigating project intent
+
+## Immediate Product Priorities
+
+The next implementation priorities are:
+
+1. freeze the smallest practical MVP language subset
+2. parse that subset end-to-end
+3. perform semantic validation on that same subset
+4. generate real LVGL C for one example project
+
+The project should prefer one complete thin slice over broad partial support.

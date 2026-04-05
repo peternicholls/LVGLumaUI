@@ -6,6 +6,44 @@ This document is intentionally provisional.
 
 The first repository pass does not freeze the LumaUI authored language. Instead, it defines the boundaries that the future language must satisfy so implementation work can begin without committing too early to a concrete grammar.
 
+## Phase Policy
+
+Language design should proceed in explicit phases.
+
+### Current phase
+
+`Phase 0/1 boundary`
+
+Meaning:
+
+- the repository already contains provisional source examples
+- the final grammar is not yet ratified
+- the next language task is to freeze a narrow MVP subset, not the full aspirational surface
+
+### Rule for the next phase
+
+The next phase should ratify only the syntax needed for the first end-to-end compiler slice.
+
+Recommended first ratified slice:
+
+- `Screen`
+- `Column`
+- `Row`
+- `Text`
+- `Button`
+- id support
+- class support
+- a tiny style declaration subset
+
+Recommended deferrals:
+
+- `Grid`
+- `Image`
+- `Card`
+- complex selectors
+- advanced binding syntax
+- shorthand-heavy style syntax
+
 ## What Is Fixed in This Phase
 
 The following expectations are considered stable:
@@ -158,3 +196,12 @@ The next language phase should produce:
 - selector and property surface definition
 - binding and event reference rules
 - source-to-AST examples with diagnostics
+
+## Language Exit Gate for the Next Phase
+
+The next phase should be considered complete when:
+
+- the supported syntax is explicitly documented
+- unsupported syntax is explicitly documented
+- `examples/minimal` is fully expressible within the ratified subset
+- parser implementation work can proceed without guessing intended language behavior

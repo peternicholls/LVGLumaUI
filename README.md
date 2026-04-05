@@ -4,6 +4,18 @@ LumaUI is an open-source compiler project for authoring LVGL user interfaces in 
 
 This repository is the first disciplined pass of the project. It establishes the product framing, compiler architecture, crate boundaries, examples, diagnostics approach, and LVGL backend shape without prematurely freezing the authored language grammar.
 
+## Current Phase
+
+The project is currently in `Phase 0: Foundation`.
+
+Phase 0 means:
+
+- the repository shape is in place
+- the compiler pipeline boundaries are defined
+- examples exist as provisional fixtures
+- the authored language is not frozen yet
+- end-to-end compilation is not complete yet
+
 ## Why Rust
 
 The implementation is scaffolded in Rust for three reasons:
@@ -50,6 +62,7 @@ This repo intentionally prioritizes foundation over breadth.
 ├── ARCHITECTURE.md
 ├── LANGUAGE_SPEC.md
 ├── LVGL_MAPPING.md
+├── NEXT_STEPS.md
 ├── PRD.md
 ├── TASKS.md
 ├── cli/
@@ -97,13 +110,31 @@ cargo test
 - keep LVGL mappings conservative and explicit
 - ensure examples, docs, tests, and code tell the same story
 
-## Planned Next Steps
+## Phase Roadmap
 
-1. Freeze the v1 authored-language grammar.
-2. Implement real parsing for screen and style documents.
-3. Lower parsed documents into typed semantic models.
-4. Expand the LVGL C backend from synthetic IR fixtures to end-to-end builds.
-5. Add preview integration through an LVGL SDL flow.
+1. `Phase 0: Foundation`
+   Repo shape, docs, crate boundaries, examples, diagnostics scaffolding.
+2. `Phase 1: Language Freeze and Parsing`
+   Ratify the MVP grammar and implement real parsing for markup and styles.
+3. `Phase 2: Semantic Analysis and IR`
+   Validate authored input, normalize supported properties, and lower to canonical IR.
+4. `Phase 3: LVGL C Backend`
+   Generate deterministic, readable C for the MVP widget and style surface.
+5. `Phase 4: Fixtures and Stability`
+   Turn examples into trusted golden fixtures and expand regression coverage.
+6. `Phase 5: Preview`
+   Add optional LVGL SDL preview without compromising compiler-first design.
+
+## Immediate Next Steps
+
+The highest-priority work is:
+
+1. ratify the narrowest possible MVP grammar
+2. implement the first real parser for `examples/minimal`
+3. define semantic normalization for ids, widgets, and the supported property subset
+4. complete one honest end-to-end path from source to generated C
+
+See `NEXT_STEPS.md` for the operational checklist and `TASKS.md` for phased acceptance criteria.
 
 ## License
 

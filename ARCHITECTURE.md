@@ -17,6 +17,40 @@ project config
       -> generated .c/.h output
 ```
 
+## Phase-to-Architecture Map
+
+Not every layer should mature at the same time. The recommended sequence is:
+
+### Phase 0: Foundation
+
+- `compiler/` owns config, diagnostics, and discovery
+- `parser/` owns tokenisation and AST scaffolding
+- `semantic/`, `ir/`, and `backend/` define their contracts
+- `cli/` exposes command shape
+
+### Phase 1: Language Freeze and Parsing
+
+- `parser/` becomes the main focus
+- `compiler/` continues to support diagnostics and project loading
+- downstream layers should remain stable consumers, not moving targets
+
+### Phase 2: Semantic Analysis and IR
+
+- `semantic/` and `ir/` become the main focus
+- parser output should already be stable enough to lower from
+- backend work should still follow documented mapping constraints
+
+### Phase 3: Backend Integration
+
+- `backend/lvgl_c/` and `cli/` become the main focus
+- semantic output should already be canonical enough that the backend does not guess
+
+### Phase 4 and Later
+
+- examples, regression coverage, preview orchestration, and supported-surface expansion
+
+This sequencing matters. If a task forces simultaneous redesign of parser, semantic, IR, and backend layers, the language slice is probably still too large.
+
 ## Repository Layers
 
 ### `compiler/`
@@ -153,6 +187,42 @@ It intentionally defers:
 - on-disk C emission workflow
 - preview runtime integration
 
+## Phase Gates
+
+Each implementation phase should pass a gate before the next one expands scope.
+
+### Gate A: Language Gate
+
+Before broad parser work:
+
+- supported syntax is documented
+- unsupported syntax is documented
+- example fixtures do not over-promise extra features
+
+### Gate B: Parser Gate
+
+Before broad semantic work:
+
+- the MVP subset parses into a real AST
+- syntax errors produce useful diagnostics
+- parser tests cover invalid inputs
+
+### Gate C: Semantic Gate
+
+Before broad backend work:
+
+- the MVP subset lowers into canonical IR
+- duplicate ids and unsupported properties are rejected
+- semantic normalization rules are explicit
+
+### Gate D: Backend Gate
+
+Before preview or broader feature work:
+
+- one example goes from source to generated C
+- symbol naming is stable
+- generated output is snapshot-tested
+
 ## Extensibility
 
 The architecture is designed so later work can add:
@@ -163,3 +233,16 @@ The architecture is designed so later work can add:
 - alternate IR exporters
 - simulator preview orchestration
 - version-aware LVGL backend adapters
+
+## Recommended Narrow Slice
+
+The preferred first end-to-end slice is:
+
+- one `Screen`
+- one layout container, ideally `Column`
+- one `Text`
+- one `Button`
+- class and id support
+- a tiny supported style subset
+
+That slice is large enough to exercise the pipeline and small enough to keep decisions reversible.
