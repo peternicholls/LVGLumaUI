@@ -32,6 +32,8 @@ Not complete yet:
 
 Execution rule:
 
+- Treat `001-brownfield-spec` as the integration branch for the active brownfield slice, not the branch for direct phase implementation work.
+- Create one child branch per phase from the current tip of `001-brownfield-spec`, open each phase PR back into `001-brownfield-spec`, and start the next phase branch only after the previous PR merges.
 - For any code-bearing step, write or update the failing test, fixture, snapshot, or command assertion first.
 - Keep helpers and modules single-purpose so stage isolation remains easy to review.
 - When `doctor`, `validate`, or `build` output changes, treat logging and diagnostics as explicit contract behavior and verify them deliberately.
@@ -43,6 +45,8 @@ Execution rule:
 ## Execution Order
 
 Work should proceed in this order. Do not skip ahead unless a dependency is already satisfied.
+
+Before starting any step below, sync `001-brownfield-spec`, create the phase branch for that step, and plan to merge it back into `001-brownfield-spec` by PR before beginning the next step.
 
 ### Step 1: Ratify the MVP Language Surface
 
