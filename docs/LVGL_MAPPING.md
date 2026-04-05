@@ -1,4 +1,4 @@
-# LVGL Mapping
+# LVGL Mapping v1.0
 
 ## Scope
 

@@ -1,4 +1,4 @@
-# Language Specification
+# Language Specification v1.0
 
 ## Status
 
