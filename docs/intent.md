@@ -87,7 +87,7 @@ Do not collapse these layers together for convenience.
 
 ## How To Approach Tasks
 
-1. Start from the docs and current milestone in `docs/TASKS.md`.
+1. Start from `.specify/memory/constitution.md`, then the docs and current milestone in `docs/TASKS.md`.
 2. Prefer the smallest change that improves the pipeline honestly.
 3. If a feature would force language decisions that have not been ratified yet, document the constraint and defer the feature.
 4. Update the relevant docs when behavior or scope changes.
