@@ -131,6 +131,14 @@ cargo test
 
 Operator-facing commands are expected to remain deterministic and reviewable. Diagnostics should stay stable and actionable, while progress logging should remain stage-scoped and separate from generated output.
 
+For the standard repository verification bundle during the current brownfield slice:
+
+```bash
+./scripts/lumaui-phase-check.sh
+```
+
+That script runs the workspace tests plus `lumaui doctor` and `lumaui validate` against `examples/minimal`. It treats `lumaui build` as gated by default and only requires it with `--require-build`.
+
 ## First-Pass Goals
 
 - keep repo boundaries crisp
