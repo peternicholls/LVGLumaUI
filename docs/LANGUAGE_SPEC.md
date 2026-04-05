@@ -1,6 +1,12 @@
-# Language Specification v1.0
+# Language Specification
+
+**Language Spec Version**: `LS-0.1.0`
+**Status**: provisional
+**Repository Release Version**: tracked separately in the root workspace version and `CHANGELOG.md`
 
 This specification governs the authored language for Luma UI for LVGL, shortened to LumaUI.
+
+Language-specification versioning is intentionally separate from application and workspace versioning. Language-contract history is tracked in `docs/LANGUAGE_CHANGELOG.md`, while repository release history remains in `CHANGELOG.md`.
 
 ## Status
 
@@ -11,6 +17,18 @@ The first repository pass does not freeze the LumaUI authored language. Instead,
 The language specification also assumes clean stage ownership: syntax belongs to `parser/`, meaning and supported-surface decisions belong to `semantic/`, canonical representation belongs to `ir/`, and LVGL API mapping belongs to `backend/lvgl_c/`. This document describes authored-language intent and boundaries; it does not delegate unresolved language design to downstream code generation.
 
 Language-shaping decisions follow the repository sign-off workflow. The agent may prepare proposals, tradeoff analysis, and supporting research, but ratified language decisions are not considered final until the developer explicitly signs them off.
+
+## Versioning Policy
+
+The language specification has its own version line and should not inherit the workspace release version.
+
+Use the `LS-MAJOR.MINOR.PATCH` format for the authored-language contract.
+
+- Increment `MAJOR` for incompatible changes to already-ratified grammar or language-contract meaning.
+- Increment `MINOR` for ratified surface expansion, new explicitly supported constructs, or major clarifications that broaden the language without invalidating already-ratified input.
+- Increment `PATCH` for editorial clarifications, examples, wording cleanup, and non-semantic corrections that do not change the ratified contract.
+
+While the language remains provisional, versions still advance on meaningful contract revisions, but the document status must remain explicit so the version number is not mistaken for implementation completeness.
 
 ## Phase Policy
 

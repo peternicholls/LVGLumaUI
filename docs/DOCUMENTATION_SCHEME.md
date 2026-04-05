@@ -66,9 +66,12 @@ Use local READMEs only for material tightly coupled to those folders, such as fi
 | --- | --- | --- |
 | Repository-local agent instructions | `AGENTS.md` | Active agent guidance at the repository root. |
 | Repository overview | `README.md` | Entry point only; keep concise and link outward. |
+| Repository changelog | `CHANGELOG.md` | Root-level release history for the repository. |
 | Architecture and stage ownership | `docs/ARCHITECTURE.md` | Cross-feature compiler structure only. |
 | Language contract | `docs/LANGUAGE_SPEC.md` | Normative authored-language scope and constraints. |
+| Language contract changelog | `docs/LANGUAGE_CHANGELOG.md` | Revision history for the authored-language contract. |
 | LVGL backend mapping | `docs/LVGL_MAPPING.md` | Cross-feature backend reference and mapping limits. |
+| Versioning policy | `docs/VERSIONING.md` | Repository-wide versioning, tagging, and changelog rules. |
 | Repository roadmap and execution order | `docs/TASKS.md`, `docs/NEXT_STEPS.md` | Roadmap and operational guidance. |
 | Filing rules and housekeeping | `docs/DOCUMENTATION_SCHEME.md` | This document. |
 | Decision brief template | `docs/DECISION_BRIEF_TEMPLATE.md` | Reusable repository-wide format for research and sign-off documents. |
@@ -92,12 +95,16 @@ The current repository can keep its existing active files in place. For all new 
 docs/
   ARCHITECTURE.md
   LANGUAGE_SPEC.md
+  LANGUAGE_CHANGELOG.md
   LVGL_MAPPING.md
   NEXT_STEPS.md
   PRD.md
   TASKS.md
+  VERSIONING.md
   DOCUMENTATION_SCHEME.md
   archive/
+
+CHANGELOG.md
 
 specs/
   <feature-id>/
@@ -208,7 +215,10 @@ Apply the scheme to the current repository like this:
 
 - `AGENTS.md` is the canonical repository-local agent instruction file.
 - `README.md` remains the top-level entry point.
+- `CHANGELOG.md` is the canonical repository release history.
 - `docs/ARCHITECTURE.md`, `docs/LANGUAGE_SPEC.md`, `docs/LVGL_MAPPING.md`, `docs/TASKS.md`, and `docs/NEXT_STEPS.md` remain the canonical repository-wide active set.
+- `docs/LANGUAGE_CHANGELOG.md` is the canonical change history for the authored-language contract.
+- `docs/VERSIONING.md` is the canonical versioning and tagging policy.
 - `docs/archive/CONSTITUTION.md` remains historical until or unless it is restored as an active governing file.
 - `docs/archive/intent.md`, `docs/archive/one-shot-prompt.md`, and `docs/archive/project_specification.md` are historical bootstrap or precursor material.
 - `specs/001-brownfield-spec/` remains the canonical feature packet for the current slice.

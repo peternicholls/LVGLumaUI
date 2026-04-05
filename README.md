@@ -166,6 +166,9 @@ The highest-priority work is:
 
 See `NEXT_STEPS.md` for the operational checklist and `TASKS.md` for phased acceptance criteria.
 See `docs/DOCUMENTATION_SCHEME.md` for the canonical filing and housekeeping rules for repository and feature documents.
+See `docs/VERSIONING.md` for the repository versioning and tagging policy.
+See `docs/LANGUAGE_SPEC.md` and `docs/LANGUAGE_CHANGELOG.md` for the authored-language contract and its separate revision history.
+See `CHANGELOG.md` for release-facing change history.
 See `docs/DECISION_BRIEF_TEMPLATE.md` for the standard decision brief format used for research and sign-off discussions.
 See `AGENTS.md` for the canonical repository-local agent instructions.
 
