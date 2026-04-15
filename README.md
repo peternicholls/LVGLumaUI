@@ -2,7 +2,7 @@
 
 Luma UI for LVGL, shortened to LumaUI, is an open-source compiler project for authoring LVGL user interfaces in a declarative, text-first format and lowering them to deterministic, readable C.
 
-This repository is the first disciplined pass of the project. It establishes the product framing, compiler architecture, crate boundaries, examples, diagnostics approach, and LVGL backend shape without prematurely freezing the authored language grammar.
+This repository is the first disciplined pass of the project. It establishes the product framing, compiler architecture, crate boundaries, examples, diagnostics approach, and LVGL backend shape while ratifying a narrow first authored-language slice for the MVP compiler path.
 
 It also treats clean stage ownership and operator-visible observability as part of the product design. Compiler stages should stay narrow, and command output should make pipeline progress and failures understandable without leaking logging noise into diagnostics or generated files.
 
@@ -10,14 +10,14 @@ Major language, architecture, mapping, and observability decisions are also hand
 
 ## Current Phase
 
-The project is currently in `Phase 0: Foundation`.
+The project is currently in `Phase 1: Ratified MVP Slice and Parsing`.
 
-Phase 0 means:
+This means:
 
 - the repository shape is in place
-- the compiler pipeline boundaries are defined
-- examples exist as provisional fixtures
-- the authored language is not frozen yet
+- the first MVP language slice is ratified in `docs/LANGUAGE_SPEC.md`
+- `examples/minimal` is the normative authored fixture for that slice
+- parser and semantic implementation are still catching up to the ratified contract
 - end-to-end compilation is not complete yet
 
 ## Why Rust
@@ -54,9 +54,11 @@ This repo intentionally prioritizes foundation over breadth.
 - The documentation pack is in place.
 - The Rust workspace is scaffolded by compiler stage.
 - The CLI surface is defined.
-- Examples exist as provisional authoring fixtures.
+- The first MVP language slice is ratified.
+- `examples/minimal` is the normative fixture for the ratified slice.
+- Broader examples such as `examples/dashboard` remain aspirational.
 - Lexer, diagnostics, config loading, source discovery, IR types, and LVGL C generation scaffolds are implemented.
-- Full authored-language parsing and semantic lowering are explicitly deferred to the next phase.
+- Full authored-language parsing and semantic lowering for the ratified slice are the active implementation focus.
 
 ## Workspace Layout
 
@@ -111,11 +113,16 @@ When the contracts themselves are under discussion, the expected workflow is:
 - review that material with the developer
 - defer the final call until the developer signs off
 
-## Provisional Authoring Files
+## Authored Source Files
 
-The example `.lui` and `.lus` files in `examples/` are working placeholders for fixture development. They are illustrative, not normative. The project has not yet frozen the final grammar for markup or styles.
+The repository now ratifies `.lui` and `.lus` as the authored source formats for the first MVP slice.
 
-That distinction is deliberate: this repository pass is about building the compiler shape safely before hardening language syntax.
+Within `examples/`:
+
+- `examples/minimal` is the normative fixture for the ratified slice
+- `examples/dashboard` remains an aspirational broader example and intentionally exceeds the current MVP surface
+
+The broader language is still evolving, but the current parser and semantic work should target the contract frozen in `docs/LANGUAGE_SPEC.md`.
 
 ## Quick Start
 
@@ -127,7 +134,7 @@ cargo run -p lumaui-cli -- validate examples/minimal
 cargo test
 ```
 
-`lumaui build` is wired as a compiler-stage command surface, but the source-language frontend is still under active implementation.
+`lumaui build` is wired as a compiler-stage command surface, but the source-language frontend for the ratified slice is still under active implementation.
 
 Operator-facing commands are expected to remain deterministic and reviewable. Diagnostics should stay stable and actionable, while progress logging should remain stage-scoped and separate from generated output.
 
@@ -144,7 +151,7 @@ Operator-facing commands are expected to remain deterministic and reviewable. Di
 
 1. `Phase 0: Foundation`
    Repo shape, docs, crate boundaries, examples, diagnostics scaffolding.
-2. `Phase 1: Language Freeze and Parsing`
+2. `Phase 1: Ratified MVP Slice and Parsing`
    Ratify the MVP grammar and implement real parsing for markup and styles.
 3. `Phase 2: Semantic Analysis and IR`
    Validate authored input, normalize supported properties, and lower to canonical IR.
@@ -159,9 +166,9 @@ Operator-facing commands are expected to remain deterministic and reviewable. Di
 
 The highest-priority work is:
 
-1. ratify the narrowest possible MVP grammar
-2. implement the first real parser for `examples/minimal`
-3. define semantic normalization for ids, widgets, and the supported property subset
+1. implement the first real parser for the ratified MVP slice
+2. define semantic normalization for ids, events, widgets, and the supported property subset
+3. align LVGL backend emission to the ratified widget and style surface
 4. complete one honest end-to-end path from source to generated C
 
 See `NEXT_STEPS.md` for the operational checklist and `TASKS.md` for phased acceptance criteria.

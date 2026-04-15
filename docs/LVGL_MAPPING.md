@@ -6,6 +6,8 @@ This document defines the intended mapping from LumaUI concepts to LVGL 9.x APIs
 
 Where a mapping is not yet settled, it is called out as a TODO instead of being hand-waved.
 
+The current ratified backend target is the first MVP slice defined in `docs/LANGUAGE_SPEC.md`. Broader widget and style rows in this document describe intended future direction, not permission for the backend to accept unvalidated authored input.
+
 This document only defines backend mapping responsibilities. Syntax acceptance, semantic validation, command logging, and project discovery remain owned by their upstream stages.
 
 ## Target Baseline
@@ -27,6 +29,17 @@ It does not own:
 
 If a mapping requires the backend to guess intent that should already have been resolved in `parser/` or `semantic/`, the upstream contract should be tightened first.
 
+## Ratified MVP Surface
+
+The backend mapping that should be implemented first is:
+
+- widgets: `Screen`, `Column`, `Row`, `Text`, `Button`
+- events: `onPress` only
+- selectors: `.class` and `#id`
+- style properties: `padding`, `background-color`, `text-color`, `width`, `height`
+
+Bindings, additional widget kinds, and broader style vocabulary are not part of the current backend target.
+
 
 ## Widget Mapping
 
@@ -42,7 +55,7 @@ If a mapping requires the backend to guess intent that should already have been 
 | `Image` | `lv_image_create(parent)` | Source handling depends on the future asset pipeline. |
 | `Card` | `lv_obj_create(parent)` | No dedicated LVGL widget; treated as a styled container preset. |
 
-Only widgets that have been ratified in the current slice should reach backend emission. Broader rows in this table document intended direction, not permission for the backend to accept unvalidated constructs opportunistically.
+Only `Screen`, `Column`, `Row`, `Text`, and `Button` should reach backend emission in the current slice. Broader rows in this table document intended direction, not permission for the backend to accept unvalidated constructs opportunistically.
 
 
 ## Layout Mapping
@@ -76,7 +89,7 @@ TODO:
 
 | LumaUI concept | Likely LVGL API family | Notes |
 | --- | --- | --- |
-| width / height | `lv_obj_set_width`, `lv_obj_set_height`, `lv_obj_set_size` | Percent values require careful support policy. |
+| width / height | `lv_obj_set_width`, `lv_obj_set_height`, `lv_obj_set_size` | MVP supports integer pixels and percentages. Percent values map directly to LVGL sizing semantics relative to the parent content area. |
 | padding | `lv_obj_set_style_pad_*` | Use explicit sides after semantic normalization. |
 | margin subset | `lv_obj_set_style_margin_*` | Keep subset narrow and predictable. |
 | background color | `lv_obj_set_style_bg_color` | Only where the widget supports background styling. |
@@ -91,7 +104,13 @@ Style emission should operate on normalized semantic properties. The backend sho
 
 ## Event Mapping
 
-The language will use handler references, not inline code.
+The ratified MVP event surface uses handler references, not inline code.
+
+Current MVP contract:
+
+- authored event attribute: `onPress` only
+- authored value shape: quoted identifier, for example `onPress="open_settings"`
+- no embedded expressions, argument lists, or inline code
 
 Planned lowering shape:
 
@@ -109,10 +128,18 @@ TODO:
 
 - settle the generated callback signature contract
 - decide whether handler symbol validation is compile-time strict or configurable
+- define the exact LVGL event code mapping used for `onPress`
 
 ## Binding Mapping
 
-Bindings are planned as symbolic references only.
+Bindings are explicitly out of scope for the ratified MVP slice.
+
+Current rule:
+
+- `bind`-style input is rejected during semantic validation
+- the backend should emit no binding-related code paths in the current slice
+
+Possible future direction:
 
 Non-goals for v1:
 
