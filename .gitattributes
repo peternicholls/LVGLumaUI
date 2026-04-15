@@ -1,0 +1,15 @@
+# Normalize text files across macOS, Linux, WSL, and Windows checkouts.
+* text=auto eol=lf
+
+# Preserve native line endings for Windows command scripts when they appear.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Keep binary assets opaque to line-ending normalization.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
