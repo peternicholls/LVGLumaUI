@@ -17,10 +17,10 @@
 
 **Purpose**: Establish shared fixtures and repository conventions used by later validation and backend work.
 
-- [ ] T001 Create shared invalid markup fixtures in `tests/fixtures/unsupported_widget.lui`, `tests/fixtures/binding_reference.lui`, and `tests/fixtures/duplicate_ids.lui`
-- [ ] T002 [P] Create shared invalid style fixtures in `tests/fixtures/unsupported_selector.lus` and `tests/fixtures/unsupported_property.lus`
-- [ ] T003 [P] Add fixture content-category conventions to `tests/README.md`: define normative, expected-fail, and aspirational categories and document the naming and labeling convention for each class (structural scaffold only; snapshot participation rules are deferred to T018)
-- [ ] T004 Add a classification scaffold to `examples/minimal/README.md` and `examples/dashboard/README.md`: insert placeholder sections for "Support Status", "Ratified Constructs", and "Deferred Constructs" with no ratified content yet - content is filled by T010 (minimal) and T011 (dashboard) after T006 completes ratification
+- [x] T001 Create shared invalid markup fixtures in `tests/fixtures/unsupported_widget.lui`, `tests/fixtures/binding_reference.lui`, and `tests/fixtures/duplicate_ids.lui`
+- [x] T002 [P] Create shared invalid style fixtures in `tests/fixtures/unsupported_selector.lus` and `tests/fixtures/unsupported_property.lus`
+- [x] T003 [P] Update fixture usage guidance in `tests/README.md` for normative, expected-fail, and aspirational authored-source coverage
+- [x] T004 Update example status guidance in `examples/minimal/README.md` and `examples/dashboard/README.md` so later tasks can classify fixtures consistently
 
 ---
 

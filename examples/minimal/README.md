@@ -1,5 +1,5 @@
 # Minimal Example
 
-This example is intentionally small and acts as both documentation and a fixture.
+This example is intentionally small and acts as both documentation and the normative fixture for the ratified first slice.
 
-The `.lui` and `.lus` files are provisional authored-language sketches. They are useful for discovery, lexer tests, and future parser work, but they do not yet define the final LumaUI grammar.
+The authored files here are the expected pass path for the active slice. They should stay inside the ratified widget, selector, property, and event-reference surface so `doctor`, `validate`, starter-template regression checks, and later backend snapshots can use them as the repository's trusted baseline.

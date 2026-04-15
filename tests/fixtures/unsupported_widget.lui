@@ -1,0 +1,5 @@
+<Screen id="unsupportedWidget">
+  <Grid class="content">
+    <Text text="Grid is not part of the first slice"/>
+  </Grid>
+</Screen>

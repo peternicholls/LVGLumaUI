@@ -1,0 +1,8 @@
+<Screen id="duplicateIds">
+  <Column class="root">
+    <Text id="title" text="Primary"/>
+    <Button id="title">
+      <Text text="Duplicate id"/>
+    </Button>
+  </Column>
+</Screen>
