@@ -1,0 +1,5 @@
+<Screen id="home">
+  <Column class="root">
+    <Text id="status" bind="status_text"/>
+  </Column>
+</Screen>

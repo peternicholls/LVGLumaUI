@@ -1,0 +1,3 @@
+Screen .root #title {
+  padding: 8;
+}

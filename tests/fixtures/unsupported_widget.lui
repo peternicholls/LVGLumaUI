@@ -1,0 +1,7 @@
+<Screen id="home">
+  <Column class="root">
+    <Card id="info">
+      <Text text="Cards are deferred from the first slice."/>
+    </Card>
+  </Column>
+</Screen>
