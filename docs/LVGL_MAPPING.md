@@ -1,4 +1,8 @@
-# LVGL Mapping v1.0
+# LVGL Mapping
+
+**Document Status**: active repository policy
+**Versioning**: tracked through the repository/workspace version and `CHANGELOG.md`
+**Decision Sync**: mapping-policy changes should stay aligned with approved decision briefs in `specs/001-brownfield-spec/decisions/`
 
 ## Scope
 
@@ -9,6 +13,41 @@ Where a mapping is not yet settled, it is called out as a TODO instead of being 
 The current ratified backend target is the first MVP slice defined in `docs/LANGUAGE_SPEC.md`. Broader widget and style rows in this document describe intended future direction, not permission for the backend to accept unvalidated authored input.
 
 This document only defines backend mapping responsibilities. Syntax acceptance, semantic validation, command logging, and project discovery remain owned by their upstream stages.
+
+It is also a workflow document for backend-mapping decisions: changes here should reflect approved repository direction, not speculative implementation shortcuts.
+
+## Workflow Status
+
+Current workflow posture:
+
+- this document records active mapping policy and intended LVGL 9.x lowering direction
+- it must stay aligned with the current ratified language slice and current feature packet
+- unresolved or disputed mappings should be captured as explicit TODOs or decision briefs, not treated as implicit permission to generate code
+
+## Mapping Workflow
+
+Use this sequence when proposing or changing a mapping:
+
+1. Confirm the authored-language surface is already ratified in `docs/LANGUAGE_SPEC.md` or the active feature packet.
+2. Confirm the mapping fits the active phase and narrow-slice constraints in `docs/TASKS.md` and `docs/NEXT_STEPS.md`.
+3. If the mapping changes repository policy, ownership boundaries, or generated-output conventions, write or update a decision brief under `specs/<feature-id>/decisions/` using `docs/DECISION_BRIEF_TEMPLATE.md`.
+4. Update this document only after the recommended direction is ready for developer review or has already been approved.
+5. Keep downstream backend code, snapshots, and operator-facing docs synchronized with the chosen mapping.
+
+Do not use backend code as the place where unresolved mapping policy gets decided.
+
+## Decision Sync Rules
+
+This document must stay in sync with decision briefs and approved feature direction.
+
+Rules:
+
+- if a mapping row is ratified for active implementation, the corresponding decision state should be visible in the relevant feature packet or supporting docs
+- if a mapping is still under discussion, this document should say so explicitly and point to a decision brief rather than presenting the mapping as settled
+- if a decision brief is approved and changes backend policy, update this document in the same change or the next immediately linked follow-up
+- if a previous mapping direction is superseded, remove or rewrite the outdated guidance here instead of leaving contradictory text behind
+
+For the active brownfield slice, feature-scoped decision material belongs under `specs/001-brownfield-spec/decisions/`.
 
 ## Target Baseline
 
@@ -29,16 +68,7 @@ It does not own:
 
 If a mapping requires the backend to guess intent that should already have been resolved in `parser/` or `semantic/`, the upstream contract should be tightened first.
 
-## Ratified MVP Surface
-
-The backend mapping that should be implemented first is:
-
-- widgets: `Screen`, `Column`, `Row`, `Text`, `Button`
-- events: `onPress` only
-- selectors: `.class` and `#id`
-- style properties: `padding`, `background-color`, `text-color`, `width`, `height`
-
-Bindings, additional widget kinds, and broader style vocabulary are not part of the current backend target.
+If a mapping change would force simultaneous redesign across `semantic/`, `ir/`, and `backend/lvgl_c/`, reduce the slice and capture the tradeoff in decision material before updating this document as active policy.
 
 
 ## Widget Mapping
@@ -56,6 +86,8 @@ Bindings, additional widget kinds, and broader style vocabulary are not part of 
 | `Card` | `lv_obj_create(parent)` | No dedicated LVGL widget; treated as a styled container preset. |
 
 Only `Screen`, `Column`, `Row`, `Text`, and `Button` should reach backend emission in the current slice. Broader rows in this table document intended direction, not permission for the backend to accept unvalidated constructs opportunistically.
+
+When a row moves from intended direction to active implementation policy, the ratifying decision should be reflected in the active feature docs and any relevant decision brief.
 
 
 ## Layout Mapping
@@ -84,6 +116,7 @@ TODO:
 
 - finalize the authored-language grid vocabulary before locking the backend surface
 - decide whether the MVP allows only explicit track definitions or also named templates
+- record the chosen grid policy in the active feature decision packet before treating it as settled backend behavior
 
 ## Style Property Mapping
 
@@ -128,7 +161,7 @@ TODO:
 
 - settle the generated callback signature contract
 - decide whether handler symbol validation is compile-time strict or configurable
-- define the exact LVGL event code mapping used for `onPress`
+- capture the approved callback contract in feature decision material before relying on it as stable repository policy
 
 ## Binding Mapping
 
@@ -164,6 +197,7 @@ TODO:
 - decide conversion responsibility boundaries
 - define generated declarations for image/font assets
 - define cache invalidation strategy for asset outputs
+- treat asset-pipeline policy as decision-brief material before expanding backend support
 
 ## Backend Observability
 
@@ -175,3 +209,5 @@ Rules:
 - mapping diagnostics stay actionable and deterministic
 - generated `.c` and `.h` files remain free of progress logging or trace text
 - any future verbose mode should expose additional backend detail through command output, not through generated-file comments added only for tracing
+
+Observability changes that alter operator-facing command behavior should be kept in sync with decision briefs and CLI contract docs, not documented here in isolation.

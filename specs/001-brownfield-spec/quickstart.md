@@ -156,6 +156,12 @@ cargo test -p lumaui-backend-lvgl-c
 cargo run -p lumaui-cli -- build examples/minimal
 ```
 
+Snapshot maintenance rule:
+
+- treat `tests/snapshots/minimal_screen.c` and `tests/snapshots/minimal_screen.h` as exact generated-output contracts
+- if backend emitter text changes intentionally, update those snapshots in the same change
+- rerun the full verification bundle after any snapshot refresh so backend and frontend checks stay aligned
+
 Backend gate is complete when repeated builds of the same input produce stable generated output.
 
 ## Step 7: Lock in fixture and stability expectations

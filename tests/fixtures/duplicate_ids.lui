@@ -1,8 +1,8 @@
-<Screen id="duplicateIds">
+<Screen id="home">
   <Column class="root">
-    <Text id="title" text="Primary"/>
+    <Text id="title" text="First title"/>
     <Button id="title">
-      <Text text="Duplicate id"/>
+      <Text text="Second title collides with the first"/>
     </Button>
   </Column>
 </Screen>

@@ -1,7 +1,33 @@
 # Minimal Example
 
-This example is intentionally small and acts as both documentation and the normative fixture for the ratified first slice.
+Status: **normative** for the ratified first slice.
 
-The authored files here are the expected pass path for the active slice. They should stay inside the ratified widget, selector, property, and event-reference surface so `doctor`, `validate`, starter-template regression checks, and later backend snapshots can use them as the repository's trusted baseline.
+This example is the canonical authored-source input the compiler is expected to validate and build successfully. Every construct used here is part of the ratified first slice.
 
-The screen fixture intentionally exercises the ratified MVP event shape through `onPress="open_settings"` on the button while keeping the rest of the tree minimal.
+## Support Status
+
+- `lumaui validate examples/minimal` MUST succeed.
+- `lumaui build examples/minimal` MUST succeed and emit deterministic LVGL C under `examples/minimal/generated/ui/`.
+
+## Ratified Constructs
+
+Markup:
+
+- `Screen`, `Column`, `Row`, `Text`, `Button`
+- `id="..."` and `class="..."` attributes
+- `text="..."` literal on `Text`
+- Named event references on `Button` via `onPress="handler_name"`
+
+Styles:
+
+- Class selector (`.name`) and id selector (`#name`)
+- Properties: `padding`, `background-color`, `text-color`, `width`, `height`
+
+## Deferred Constructs
+
+These remain out of scope for the first slice:
+
+- Widgets: `Container`, `Grid`, `Image`, `Card`
+- Bindings: `bind="..."` and any reactive value reference
+- Style properties beyond the ratified set (e.g. `border-radius`, `margin`, fonts)
+- Selector combinators, pseudo selectors, and tag selectors

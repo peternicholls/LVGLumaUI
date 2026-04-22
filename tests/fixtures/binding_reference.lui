@@ -1,5 +1,5 @@
-<Screen id="bindingReference">
+<Screen id="home">
   <Column class="root">
-    <Text id="statusValue" bind="status_text"/>
+    <Text id="status" bind="status_text"/>
   </Column>
 </Screen>

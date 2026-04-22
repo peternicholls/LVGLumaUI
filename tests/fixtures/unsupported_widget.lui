@@ -1,5 +1,7 @@
-<Screen id="unsupportedWidget">
-  <Grid class="content">
-    <Text text="Grid is not part of the first slice"/>
-  </Grid>
+<Screen id="home">
+  <Column class="root">
+    <Card id="info">
+      <Text text="Cards are deferred from the first slice."/>
+    </Card>
+  </Column>
 </Screen>

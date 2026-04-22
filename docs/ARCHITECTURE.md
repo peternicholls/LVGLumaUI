@@ -285,7 +285,7 @@ Before preview or broader feature work:
 
 - one example goes from source to generated C
 - symbol naming is stable
-- generated output is snapshot-tested
+- generated output is protected by exact backend snapshots, and the real frontend build path is checked against those same contracts where project-level naming differences are normalized intentionally
 - build-stage observability is intentional and separate from generated artifacts
 - backend ownership-boundary and emission-policy decisions have been reviewed and signed off by the developer
 

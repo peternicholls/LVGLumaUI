@@ -1,8 +1,17 @@
-/target
-/generated
+# Rust build output
+/target/
+
+# Generated compiler output, including per-project generated/ui trees
+generated/
+
+# Synced tool folders, excluding runtime logs and volatile state
+.omx/logs/*
+!.omx/logs/.gitkeep
+.omx/metrics.json
+.omx/state/*.json
+!.omx/state/.gitkeep
+
+# macOS metadata
 .DS_Store
-Thumbs.db
-*.log
-.env*
-*.tmp
-*.swp
+
+

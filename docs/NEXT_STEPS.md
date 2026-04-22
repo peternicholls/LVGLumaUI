@@ -11,30 +11,38 @@ This document is the execution-oriented companion to `TASKS.md`.
 
 ## Current Status
 
-Current active phase: `Phase 0: Foundation`
+Current active phase: `Phase 6: Polish`
 
 Completed in the current repository state:
 
 - root documentation pack
 - Rust workspace layout
 - compiler stage crates
-- provisional examples
-- diagnostics, config, and discovery scaffolding
-- provisional lexer and backend scaffolding
+- ratified first slice (`LS-0.2.0`) — see `docs/LANGUAGE_SPEC.md`
+- real lexer, recursive-descent parser, semantic validation + lowering, IR with applied styles, LVGL 9.x backend with style/event emission and ownership-region markers
+- end-to-end CLI: `init`, `validate`, `build`, `doctor` all wired through the pipeline; `build` writes deterministic output to disk
+- frontend-driven CLI integration tests with normalized exact snapshot comparison, parser/lexer unit tests, semantic validation tests, IR tests, backend snapshot test
+- `scripts/lumaui-phase-check.sh --require-build` passes against `examples/minimal`
 
 Not complete yet:
 
-- ratified language grammar
-- real AST construction
-- semantic lowering
-- end-to-end generated output flow
-- preview integration
+- broader style and widget surface beyond the ratified slice (requires decision briefs + `MINOR` bumps)
+- preview / runtime integration
+- bindings (explicitly deferred)
+- asset pipeline
 
 ## Pre-Phase-2 Review Check
 
-Before broad semantic and IR work begins, resolve the MVP contract gaps captured in `docs/LANGUAGE_REVIEW.md`.
-
-The key rule is simple: Phase 2 should implement a frozen first-slice contract, not finish designing it implicitly through semantic code.
+- Treat `001-brownfield-spec` as the integration branch for the active brownfield slice, not the branch for direct phase implementation work.
+- Create one flat-named phase branch per phase from the current tip of `001-brownfield-spec`, open each phase PR back into `001-brownfield-spec`, and start the next phase branch only after the previous PR merges.
+- For any code-bearing step, write or update the failing test, fixture, snapshot, or command assertion first.
+- Keep helpers and modules single-purpose so stage isolation remains easy to review.
+- When `doctor`, `validate`, or `build` output changes, treat logging and diagnostics as explicit contract behavior and verify them deliberately.
+- When generated LVGL output changes intentionally, update the committed snapshots in the same change and rerun the full verification bundle so backend and frontend checks stay aligned.
+- Update the relevant docs, example labels, and operator guidance in the same change when support status or behavior changes.
+- Keep wording concise and consistent so ratified support, deferred work, and aspirational examples remain easy to audit.
+- Before major stage choices are treated as settled, produce discussion-ready supporting material with options, pros/cons, relevant practices, implementation developments, risks, and open questions.
+- Defer the final decision on those choices until the developer explicitly signs off.
 
 ## Execution Order
 
