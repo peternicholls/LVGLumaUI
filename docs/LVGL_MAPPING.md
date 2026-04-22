@@ -10,6 +10,8 @@ This document defines the intended mapping from LumaUI concepts to LVGL 9.x APIs
 
 Where a mapping is not yet settled, it is called out as a TODO instead of being hand-waved.
 
+The current ratified backend target is the first MVP slice defined in `docs/LANGUAGE_SPEC.md`. Broader widget and style rows in this document describe intended future direction, not permission for the backend to accept unvalidated authored input.
+
 This document only defines backend mapping responsibilities. Syntax acceptance, semantic validation, command logging, and project discovery remain owned by their upstream stages.
 
 It is also a workflow document for backend-mapping decisions: changes here should reflect approved repository direction, not speculative implementation shortcuts.
@@ -83,7 +85,7 @@ If a mapping change would force simultaneous redesign across `semantic/`, `ir/`,
 | `Image` | `lv_image_create(parent)` | Source handling depends on the future asset pipeline. |
 | `Card` | `lv_obj_create(parent)` | No dedicated LVGL widget; treated as a styled container preset. |
 
-Only widgets that have been ratified in the current slice should reach backend emission. Broader rows in this table document intended direction, not permission for the backend to accept unvalidated constructs opportunistically.
+Only `Screen`, `Column`, `Row`, `Text`, and `Button` should reach backend emission in the current slice. Broader rows in this table document intended direction, not permission for the backend to accept unvalidated constructs opportunistically.
 
 When a row moves from intended direction to active implementation policy, the ratifying decision should be reflected in the active feature docs and any relevant decision brief.
 
@@ -120,7 +122,7 @@ TODO:
 
 | LumaUI concept | Likely LVGL API family | Notes |
 | --- | --- | --- |
-| width / height | `lv_obj_set_width`, `lv_obj_set_height`, `lv_obj_set_size` | Percent values require careful support policy. |
+| width / height | `lv_obj_set_width`, `lv_obj_set_height`, `lv_obj_set_size` | MVP supports integer pixels and percentages. Percent values map directly to LVGL sizing semantics relative to the parent content area. |
 | padding | `lv_obj_set_style_pad_*` | Use explicit sides after semantic normalization. |
 | margin subset | `lv_obj_set_style_margin_*` | Keep subset narrow and predictable. |
 | background color | `lv_obj_set_style_bg_color` | Only where the widget supports background styling. |
@@ -135,7 +137,13 @@ Style emission should operate on normalized semantic properties. The backend sho
 
 ## Event Mapping
 
-The language will use handler references, not inline code.
+The ratified MVP event surface uses handler references, not inline code.
+
+Current MVP contract:
+
+- authored event attribute: `onPress` only
+- authored value shape: quoted identifier, for example `onPress="open_settings"`
+- no embedded expressions, argument lists, or inline code
 
 Planned lowering shape:
 
@@ -157,7 +165,14 @@ TODO:
 
 ## Binding Mapping
 
-Bindings are planned as symbolic references only.
+Bindings are explicitly out of scope for the ratified MVP slice.
+
+Current rule:
+
+- `bind`-style input is rejected during semantic validation
+- the backend should emit no binding-related code paths in the current slice
+
+Possible future direction:
 
 Non-goals for v1:
 

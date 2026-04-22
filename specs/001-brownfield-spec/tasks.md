@@ -49,6 +49,12 @@
 
 **Checkpoint**: The repo has one explicit, reviewable first-slice contract, one clearly labeled normative fixture, one clearly labeled aspirational fixture, and starter output that matches the ratified subset.
 
+Current progress against this checkpoint:
+
+- `docs/LANGUAGE_SPEC.md` now freezes the first MVP slice.
+- `README.md`, `docs/LVGL_MAPPING.md`, and `examples/minimal` have been aligned with that contract.
+- Remaining User Story 1 work is concentrated in roadmap and architecture wording, dashboard fixture labeling, starter output, and CLI regression coverage.
+
 **Intra-phase ordering (User Story 1)**:
 
 - T010 depends on T006 (normative fixture update requires a ratified grammar).
@@ -88,6 +94,11 @@
 - [x] T020 [P] [US2] Add parser and lexer success and failure coverage for the ratified subset: parser tests in `parser/src/parse.rs` covering valid and invalid first-slice markup and style documents; lexer tests covering token edge cases, unknown characters, binding-syntax token rejection, and span boundary correctness in `parser/src/lexer.rs`
 - [x] T021 [P] [US2] Add semantic validation and observable diagnostic/logging coverage for duplicate ids, unsupported widgets, unsupported properties, event references, and binding rejection in `semantic/src/lib.rs`
 - [x] T022 [P] [US2] Wire shared invalid fixtures into regression scenarios in `tests/fixtures/unsupported_widget.lui`, `tests/fixtures/binding_reference.lui`, `tests/fixtures/unsupported_selector.lus`, `tests/fixtures/unsupported_property.lus`, and `tests/fixtures/duplicate_ids.lui`
+
+Validation note for the ratified slice:
+
+- binding-shaped input should parse if well-formed enough for AST construction, then fail during semantic validation with actionable diagnostics
+- unsupported selectors and properties should follow the same parser-first, semantic-rejection rule
 
 ### Implementation for User Story 2
 
@@ -176,6 +187,7 @@
 - Keep ratified versus aspirational wording explicit so examples, mappings, and roadmap docs do not over-promise current support.
 - Defer final ratification of major stage decisions until the developer explicitly signs them off.
 - Complete story verification before moving to the next priority.
+- Treat binding-shaped authored input as an explicit expected-fail path in the current slice, not as deferred parse-only support or MVP IR surface.
 
 ### Parallel Opportunities
 
