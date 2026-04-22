@@ -90,7 +90,6 @@ fn init_project(path: &Path, name: &str, force: bool) -> Result<()> {
 struct Pipeline {
     project_root: PathBuf,
     config: WorkspaceConfig,
-    layout: ProjectLayout,
     documents: Vec<Document>,
 }
 
@@ -131,7 +130,6 @@ fn load_pipeline(project: &Path) -> Result<Pipeline> {
     Ok(Pipeline {
         project_root: project.to_path_buf(),
         config,
-        layout,
         documents,
     })
 }
@@ -156,7 +154,6 @@ fn validate_project(project: &Path) -> Result<()> {
         bail!("validation failed");
     }
     eprintln!("[validate] OK");
-    let _ = pipeline.layout;
     Ok(())
 }
 

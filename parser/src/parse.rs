@@ -117,7 +117,7 @@ impl<'a> Parser<'a> {
             match self.parse_widget() {
                 Some(w) => self.document.items.push(TopLevel::Widget(w)),
                 None => {
-                    // attempt to recover by skipping to next `<`
+                    // Recover conservatively by consuming one token.
                     self.advance();
                 }
             }

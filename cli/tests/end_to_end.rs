@@ -10,16 +10,7 @@ use std::process::Command;
 use std::sync::atomic::{AtomicU64, Ordering};
 
 fn cli_binary() -> PathBuf {
-    let mut p = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    p.pop();
-    p.push("target");
-    p.push(if cfg!(debug_assertions) {
-        "debug"
-    } else {
-        "release"
-    });
-    p.push("lumaui-cli");
-    p
+    PathBuf::from(env!("CARGO_BIN_EXE_lumaui-cli"))
 }
 
 fn unique_dir(prefix: &str) -> PathBuf {

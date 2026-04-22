@@ -143,7 +143,7 @@ impl<'a> SourceEmitter<'a> {
             }
             WidgetKind::Button => {
                 self.line(format!(
-                    "    lv_obj_t *{var} = lv_btn_create({parent_var});"
+                    "    lv_obj_t *{var} = lv_button_create({parent_var});"
                 ));
             }
         }
