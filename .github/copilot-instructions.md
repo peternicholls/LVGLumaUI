@@ -33,6 +33,7 @@ Rust 2021 workspace on the stable toolchain; authored `.lui` and `.lus` sources 
 - Keep stage ownership strict: `compiler/` shared infrastructure, `parser/` syntax, `semantic/` meaning and lowering, `ir/` canonical backend-facing model, `backend/lvgl_c/` LVGL C generation, `cli/` orchestration and operator-facing output.
 - If the task changes language policy, LVGL mapping policy, generated ownership conventions, diagnostics policy, or shared downstream contracts, write or update a decision brief under `specs/<feature-id>/decisions/` using `docs/DECISION_BRIEF_TEMPLATE.md` before implementation.
 - For code-bearing work, add or update the failing test, fixture, snapshot, or CLI assertion first, then keep docs, examples, fixtures, tests, and snapshots aligned in the same change.
+- Treat generated-output snapshots as exact contract artifacts. If backend-emitted text changes intentionally, update the committed snapshots and any frontend exact-output assertions in the same change, then rerun `scripts/lumaui-phase-check.sh --require-build`.
 - Use `scripts/lumaui-phase-check.sh` for the standard verification bundle. Treat `lumaui build` as gated unless the current slice explicitly requires end-to-end build success.
 - Use `.specify/memory/constitution.md` as the governing workflow authority. Treat `docs/archive/CONSTITUTION.md` as archival-only context.
 <!-- MANUAL ADDITIONS END -->

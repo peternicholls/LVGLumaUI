@@ -19,6 +19,7 @@ This repository exists to build a disciplined compiler pipeline that turns autho
 - Keep parser, semantic, IR, backend, and CLI responsibilities clearly separated.
 - Prefer deterministic output over clever abstractions.
 - Keep generated C stable, readable, and easy to diff.
+- Treat generated snapshots as exact contract artifacts; if emitted text changes intentionally, update the committed snapshots in the same change and rerun the verification bundle.
 - Avoid browser semantics that do not map cleanly to LVGL.
 - Treat docs, examples, fixtures, tests, and generated snapshots as first-class source material.
 - Do not imitate proprietary LVGL tooling formats or terminology.
@@ -109,6 +110,7 @@ When adding backend work:
 
 - add snapshot tests for generated C
 - keep snapshots readable and intentionally ordered
+- prevent backend/frontend drift: keep the canonical backend snapshots, any frontend exact-output checks, and example-generated artifacts aligned whenever emitted text changes
 
 Examples under `examples/` should act as golden fixtures, not marketing fluff.
 
