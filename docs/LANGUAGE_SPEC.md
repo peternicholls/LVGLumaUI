@@ -1,234 +1,174 @@
 # Language Specification
 
-**Language Spec Version**: `LS-0.1.0`
-**Status**: provisional
+**Language Spec Version**: `LS-0.2.0`
+**Status**: first-slice ratified for the brownfield MVP; broader surface remains provisional
 **Repository Release Version**: tracked separately in the root workspace version and `CHANGELOG.md`
 
 This specification governs the authored language for Luma UI for LVGL, shortened to LumaUI.
 
-Language-specification versioning is intentionally separate from application and workspace versioning. Language-contract history is tracked in `docs/LANGUAGE_CHANGELOG.md`, while repository release history remains in `CHANGELOG.md`.
+Language-specification versioning is intentionally separate from application and workspace versioning. Language-contract history is tracked in `docs/LANGUAGE_CHANGELOG.md`.
 
 ## Status
 
-This document is intentionally provisional.
+The first slice of the LumaUI authored language is **ratified for the brownfield MVP**. Everything in [§ Ratified First Slice](#ratified-first-slice) is normative: the parser MUST accept it, the semantic layer MUST validate it, and the backend MUST emit deterministic LVGL 9.x output for it. Everything else listed in [§ Deferred Constructs](#deferred-constructs) and [§ Provisional Surface (Not Ratified)](#provisional-surface-not-ratified) remains provisional.
 
-The first repository pass does not freeze the LumaUI authored language. Instead, it defines the boundaries that the future language must satisfy so implementation work can begin without committing too early to a concrete grammar.
+The language specification assumes clean stage ownership: syntax belongs to `parser/`, meaning and supported-surface decisions belong to `semantic/`, canonical representation belongs to `ir/`, and LVGL API mapping belongs to `backend/lvgl_c/`.
 
-The language specification also assumes clean stage ownership: syntax belongs to `parser/`, meaning and supported-surface decisions belong to `semantic/`, canonical representation belongs to `ir/`, and LVGL API mapping belongs to `backend/lvgl_c/`. This document describes authored-language intent and boundaries; it does not delegate unresolved language design to downstream code generation.
-
-Language-shaping decisions follow the repository sign-off workflow. The agent may prepare proposals, tradeoff analysis, and supporting research, but ratified language decisions are not considered final until the developer explicitly signs them off.
+Anything not listed in the ratified slice requires a decision brief and developer sign-off before implementation.
 
 ## Versioning Policy
 
-The language specification has its own version line and should not inherit the workspace release version.
-
 Use the `LS-MAJOR.MINOR.PATCH` format for the authored-language contract.
 
-- Increment `MAJOR` for incompatible changes to already-ratified grammar or language-contract meaning.
-- Increment `MINOR` for ratified surface expansion, new explicitly supported constructs, or major clarifications that broaden the language without invalidating already-ratified input.
-- Increment `PATCH` for editorial clarifications, examples, wording cleanup, and non-semantic corrections that do not change the ratified contract.
+- `MAJOR` for incompatible changes to already-ratified grammar or contract meaning.
+- `MINOR` for ratified surface expansion or major clarifications.
+- `PATCH` for editorial clarifications.
 
-While the language remains provisional, versions still advance on meaningful contract revisions, but the document status must remain explicit so the version number is not mistaken for implementation completeness.
+`LS-0.2.0` ratifies the first slice described below. Any future expansion of the supported surface MUST advance `MINOR` and update `docs/LANGUAGE_CHANGELOG.md` in the same change.
 
-## Phase Policy
+## Ratified First Slice
 
-Language design should proceed in explicit phases.
+### File Conventions
 
-### Current phase
+- `.lui` — markup (widget tree) source files.
+- `.lus` — style source files.
+- `lumaui.toml` — project configuration.
 
-`Phase 0/1 boundary`
+### Markup Grammar (XML-like)
 
-Meaning:
+```ebnf
+markup_document := element*
+element         := "<" Identifier attribute* "/>"
+                 | "<" Identifier attribute* ">" element_content "</" Identifier ">"
+attribute       := Identifier "=" StringLiteral
+element_content := element*
+```
 
-- the repository already contains provisional source examples
-- the final grammar is not yet ratified
-- the next language task is to freeze a narrow MVP subset, not the full aspirational surface
+Lexical rules:
 
-### Rule for the next phase
+- `Identifier` matches `[A-Za-z_][A-Za-z0-9_]*`.
+- `StringLiteral` is a double-quoted run of characters with no embedded newlines and no escape processing in the first slice.
+- Whitespace (` `, `\t`, `\r`, `\n`) is insignificant between tokens.
+- `// ... \n` line comments are accepted between tokens; block comments are not ratified.
 
-The next phase should ratify only the syntax needed for the first end-to-end compiler slice.
+A closing tag's identifier MUST match the opening tag's identifier exactly.
 
-Before a proposal becomes ratified, the supporting decision material should capture options considered, pros and cons, relevant practices, implementation developments, risks, and open questions for developer review.
+### Markup Widget Set
 
-Recommended first ratified slice:
+The parser accepts any opening identifier syntactically; the semantic layer rejects everything outside this ratified set:
 
-- `Screen`
+- `Screen` — exactly one per markup document, must be the document root.
 - `Column`
 - `Row`
 - `Text`
 - `Button`
-- id support
-- class support
-- a tiny style declaration subset
 
-Recommended deferrals:
+Children rules:
 
-- `Grid`
-- `Image`
-- `Card`
-- complex selectors
-- advanced binding syntax
-- shorthand-heavy style syntax
+- `Screen` MUST contain exactly one child element.
+- `Column` and `Row` MAY contain zero or more ratified children.
+- `Button` MAY contain zero or one ratified child (typically a `Text`).
+- `Text` MUST NOT contain children.
 
-## What Is Fixed in This Phase
+### Markup Attribute Surface
 
-The following expectations are considered stable:
+Ratified attributes:
 
-- LumaUI will have a declarative widget-tree source format.
-- LumaUI will have a separate style source format.
-- Source files will map cleanly to LVGL concepts rather than browser semantics.
-- Identifiers, classes, event references, and binding references will exist.
-- Layout concepts will be limited to primitives that LVGL can represent directly.
-- Arbitrary scripting expressions are out of scope.
-- Operator-facing commands may expose stage-scoped progress and failure information, but authored language behavior must stay distinct from logging and diagnostics presentation.
+- `id="…"` — optional on every widget. Identifier-shaped value. MUST be unique across the compiled project.
+- `class="…"` — optional on every widget. A single class name with the same identifier shape; multiple classes are NOT ratified.
+- `text="…"` — required on `Text`. A non-empty string literal.
+- `onPress="handler_name"` — optional on `Button`. Value MUST be an identifier (the handler symbol).
 
-## What Is Not Fixed Yet
+Any other attribute name is rejected at the semantic layer with a source-located diagnostic.
 
-The following are explicitly deferred:
+### Bindings (Explicitly Rejected)
 
-- final markup grammar
-- final style grammar
-- exact selector syntax
-- exact binding-path syntax
-- exact event reference syntax
-- file extension permanence
+`bind="…"` and any binding-shaped attribute MUST be rejected at the semantic layer with a diagnostic that names the construct and points at the deferred-bindings policy.
 
-## Source Artifact Roles
+### Style Grammar
 
-The repository uses the following working conventions while the grammar is still evolving:
-
-- `.lui` for widget-tree examples
-- `.lus` for style examples
-- `lumaui.toml` for project configuration
-
-These conventions are useful for fixtures and tooling, but they are not yet language guarantees.
-
-## Required Language Capabilities
-
-The eventual v1 language must support:
-
-- screen declarations
-- nested widget trees
-- ids
-- classes
-- named event handler references
-- named binding references
-- reusable style rules
-- width and height
-- padding
-- margin subset
-- background color
-- text color
-- radius
-- border width and color
-- font reference
-- row, column, and grid layout
-- align and justify subset
-
-## Required Core Widgets
-
-The eventual v1 language must cover:
-
-- Screen
-- Container
-- Row
-- Column
-- Grid
-- Text
-- Button
-- Image
-- Card
-
-## Semantic Boundaries
-
-The v1 language must not imply browser behavior that LumaUI cannot or should not emulate.
-
-Specifically, the language should avoid:
-
-- DOM mutation semantics
-- full CSS cascade complexity
-- deep selector combinators
-- pseudo-elements
-- layout rules that depend on browser formatting contexts
-- runtime expression evaluation in source files
-
-The language must also avoid cross-stage ambiguity. Grammar should not rely on backend inference, and supported-surface rules should not be left implicit for CLI or backend code to reinterpret later.
-
-## Constraints on Future Grammar Design
-
-When the grammar is finalized, it should preserve the following properties:
-
-### Readability
-
-Source should remain easy to author and review in plain text.
-
-### Deterministic Parsing
-
-The grammar should be unambiguous and straightforward to tokenize.
-
-### Embedded Safety
-
-Every supported construct should have a compile-time interpretation.
-
-### LVGL Affinity
-
-The language should describe intent that can lower directly to LVGL APIs.
-
-### Toolability
-
-Diagnostics, formatting, linting, and future editor support should remain feasible.
-
-### Stage Ownership
-
-Grammar decisions should make it obvious which stage owns each responsibility:
-
-- parser decides syntactic validity
-- semantic decides supported-surface validity and normalization
-- IR records canonical intent without syntax quirks
-- backend maps canonical intent to LVGL constructs without guessing upstream meaning
-
-If a proposed language feature weakens those boundaries, it should be reduced or deferred.
-
-### Observability Compatibility
-
-Language design should support clear diagnostics and command observability without making logging part of the authored source model.
-
-This means:
-
-- errors should be attributable to authored files and spans
-- success and progress reporting should happen at command/stage boundaries, not inside the language itself
-- generated output should remain free of ad hoc tracing text added only to compensate for unclear language contracts
-
-## Illustrative Example Only
-
-The example below shows the intended shape of the authoring experience, but is not a frozen syntax contract:
-
-```xml
-<Screen id="home">
-  <Column class="root">
-    <Text text="Hello"/>
-    <Button id="openSettings" onPress="open_settings">
-      <Text text="Settings"/>
-    </Button>
-  </Column>
-</Screen>
+```ebnf
+style_document := rule*
+rule           := selector "{" declaration* "}"
+selector       := class_selector | id_selector
+class_selector := "." Identifier
+id_selector    := "#" Identifier
+declaration    := property ":" value ";"
+property       := Identifier ("-" Identifier)*
+value          := Number | HexColor
 ```
 
-And a matching style sketch:
+Lexical rules:
 
-```css
-.root {
-  padding: 16;
-}
-```
+- `Identifier` and `//` line comments behave as in the markup grammar.
+- `Number` matches `[0-9]+`. Negative numbers are not ratified.
+- `HexColor` matches `#` followed by exactly 6 hex digits.
 
-These examples are directional. Future work must ratify the exact grammar in a dedicated language-design phase.
+Selector combinators (descendant, child, multiple selectors per rule, pseudo-selectors, and tag selectors) are NOT ratified.
 
-## Config Format
+### Style Property Surface
 
-The project configuration format is intentionally fixed earlier than the UI language because it affects CLI behavior and repository structure.
+Ratified properties and accepted value shapes:
 
-Working example:
+| Property | Accepted value | Applies to |
+| --- | --- | --- |
+| `padding` | `Number` (pixels, all sides) | any widget |
+| `background-color` | `HexColor` | any widget |
+| `text-color` | `HexColor` | any widget (semantically meaningful only on `Text`) |
+| `width` | `Number` (pixels) | any widget |
+| `height` | `Number` (pixels) | any widget |
+
+Any other property name is rejected at the semantic layer with a source-located diagnostic.
+
+### Selector Application
+
+Style rules apply by exact match:
+
+- `.foo` applies to every widget whose `class` attribute equals `foo`.
+- `#bar` applies to every widget whose `id` attribute equals `bar`.
+
+When multiple ratified rules set the same property on the same widget, the rule that appears later in style document order wins. There is no specificity-based cascade in the first slice.
+
+### Event References
+
+The only ratified event attribute is `onPress` on `Button`. Its value is treated as a named handler reference. The compiler does not validate handler symbols; it lowers the reference to a generated `lv_obj_add_event_cb` registration with a TODO marker for the user-supplied callback.
+
+## Deferred Constructs
+
+Out of scope for `LS-0.2.0`. Adding any of them requires a decision brief and a `MINOR` bump.
+
+- Widgets: `Container`, `Grid`, `Image`, `Card`, and any other kind not listed above.
+- Multiple classes on one element, attribute selectors, descendant/child/sibling combinators, pseudo-selectors, tag selectors.
+- Style properties beyond the ratified table above (margin, radius, borders, fonts, alignment, flex flow overrides, asset references).
+- Bindings (`bind="…"`), reactive references, expression evaluation, templates.
+- Event attributes other than `onPress` on `Button`.
+- LVGL 8.x compatibility.
+
+## Provisional Surface (Not Ratified)
+
+Still under design for later language phases:
+
+- richer style properties (margin, radius, borders, fonts, alignment)
+- broader event surface
+- bindings and view-model integration
+- asset pipeline (images, fonts)
+- preview/runtime integration
+
+## Stage Ownership Recap
+
+- `parser/` decides syntactic validity and reports source spans.
+- `semantic/` decides whether parsed constructs are in the ratified slice, normalizes values, and lowers to IR.
+- `ir/` is the canonical backend-facing model.
+- `backend/lvgl_c/` maps canonical IR to LVGL 9.x C output.
+- `cli/` orchestrates stages and presents diagnostics and progress.
+
+## Determinism Guarantees
+
+- Source files within a directory are processed in sorted filename order.
+- Diagnostics are emitted in source-document order, then in source-position order within each document.
+- Generated files use slugified, prefix-stable names; iteration order across IR collections preserves authored order.
+
+## Configuration
 
 ```toml
 project_name = "minimal"
@@ -237,25 +177,4 @@ source_dir = "ui"
 output_dir = "generated/ui"
 ```
 
-## Next-Phase Deliverables
-
-The next language phase should produce:
-
-- a real grammar definition
-- parser acceptance tests
-- selector and property surface definition
-- binding and event reference rules
-- source-to-AST examples with diagnostics
-- stage ownership that stays explicit from syntax through backend mapping
-- command-observability expectations that do not blur language behavior with logging behavior
-
-## Language Exit Gate for the Next Phase
-
-The next phase should be considered complete when:
-
-- the supported syntax is explicitly documented
-- unsupported syntax is explicitly documented
-- `examples/minimal` is fully expressible within the ratified subset
-- parser implementation work can proceed without guessing intended language behavior
-- stage ownership remains clear enough that parser, semantic, IR, backend, and CLI work can advance without hidden coupling
-- the developer has explicitly signed off on the supporting material for the ratified language slice
+`lvgl_version` MUST be `"9.x"` for `LS-0.2.0`.

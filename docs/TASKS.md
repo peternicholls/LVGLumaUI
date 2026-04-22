@@ -55,7 +55,7 @@ Establish a coherent repository, documentation pack, workspace layout, examples,
 
 ### Status
 
-Current repository state: substantially complete
+Current repository state: complete
 
 ## Phase 1: Language Freeze and Parsing
 
@@ -95,6 +95,10 @@ Turn provisional frontend scaffolding into a real, testable parser for a narrow 
 3. implement parser tests first
 4. implement the parser against `examples/minimal`
 
+### Status
+
+Complete. `LS-0.2.0` ratifies the first slice (`docs/LANGUAGE_SPEC.md`); `parser/` ships a span-aware lexer, recursive-descent markup + style parsers, and unit tests covering success and failure cases. `examples/minimal` parses end-to-end through the CLI.
+
 ## Phase 2: Semantic Analysis and IR
 
 ### Purpose
@@ -133,6 +137,10 @@ Resolve authored sources into a backend-ready, typed model.
 2. normalize style declarations into explicit forms
 3. lower `examples/minimal` into IR
 
+### Status
+
+Complete. `semantic/` validates the ratified slice (widgets, attributes, properties, selectors, bindings rejection, duplicate ids), resolves selectors deterministically, and lowers to `lumaui-ir`. Tests cover each rejection path plus the success path.
+
 ## Phase 3: LVGL C Backend
 
 ### Purpose
@@ -170,6 +178,10 @@ Generate deterministic, readable LVGL C from IR.
 2. replace synthetic backend-only fixtures with frontend-driven snapshots
 3. document unsupported emitted cases clearly
 
+### Status
+
+Complete. `lumaui build` writes deterministic LVGL 9.x `.h` + `.c` files to disk through the full pipeline; the backend snapshot test in `backend/lvgl_c/tests/generation.rs` matches the canonical `tests/snapshots/minimal_screen.{c,h}` snapshots, and the CLI integration test compares frontend-generated `examples/minimal` output against those same snapshots after symbol-prefix normalization so frontend and backend drift are caught together.
+
 ## Phase 4: Examples and Stability
 
 ### Purpose
@@ -201,6 +213,10 @@ Make examples and tests function as trusted golden fixtures and stabilize the im
 1. decide which examples are normative versus aspirational
 2. align examples with actual supported syntax
 3. expand regressions around real bugs, not hypothetical ones
+
+### Status
+
+Complete. `examples/minimal` is normative and exercised by CLI integration tests; `examples/dashboard` is explicitly labeled aspirational. `tests/fixtures/` carries shared expected-fail and normative fixtures that semantic and CLI tests consume.
 
 ## Phase 5: Preview Integration
 

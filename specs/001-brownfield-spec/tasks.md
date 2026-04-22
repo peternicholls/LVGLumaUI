@@ -17,10 +17,10 @@
 
 **Purpose**: Establish shared fixtures and repository conventions used by later validation and backend work.
 
-- [ ] T001 Create shared invalid markup fixtures in `tests/fixtures/unsupported_widget.lui`, `tests/fixtures/binding_reference.lui`, and `tests/fixtures/duplicate_ids.lui`
-- [ ] T002 [P] Create shared invalid style fixtures in `tests/fixtures/unsupported_selector.lus` and `tests/fixtures/unsupported_property.lus`
-- [ ] T003 [P] Add fixture content-category conventions to `tests/README.md`: define normative, expected-fail, and aspirational categories and document the naming and labeling convention for each class (structural scaffold only; snapshot participation rules are deferred to T018)
-- [ ] T004 Add a classification scaffold to `examples/minimal/README.md` and `examples/dashboard/README.md`: insert placeholder sections for "Support Status", "Ratified Constructs", and "Deferred Constructs" with no ratified content yet - content is filled by T010 (minimal) and T011 (dashboard) after T006 completes ratification
+- [x] T001 Create shared invalid markup fixtures in `tests/fixtures/unsupported_widget.lui`, `tests/fixtures/binding_reference.lui`, and `tests/fixtures/duplicate_ids.lui`
+- [x] T002 [P] Create shared invalid style fixtures in `tests/fixtures/unsupported_selector.lus` and `tests/fixtures/unsupported_property.lus`
+- [x] T003 [P] Add fixture content-category conventions to `tests/README.md`: define normative, expected-fail, and aspirational categories and document the naming and labeling convention for each class (structural scaffold only; snapshot participation rules are deferred to T018)
+- [x] T004 Add a classification scaffold to `examples/minimal/README.md` and `examples/dashboard/README.md`: insert placeholder sections for "Support Status", "Ratified Constructs", and "Deferred Constructs" with no ratified content yet - content is filled by T010 (minimal) and T011 (dashboard) after T006 completes ratification
 
 ---
 
@@ -34,18 +34,18 @@
 
 ### Tests for User Story 1 ⚠️
 
-- [ ] T005 [US1] Add CLI starter-template regression coverage for the ratified first slice in `cli/src/main.rs` - depends on T006 completing language ratification before regression targets are defined
+- [x] T005 [US1] Add CLI starter-template regression coverage for the ratified first slice in `cli/src/main.rs` - depends on T006 completing language ratification before regression targets are defined
 
 ### Implementation for User Story 1
 
-- [ ] T006 [US1] Ratify the supported markup grammar, style grammar, widget set, selector surface, and event/binding policy in `docs/LANGUAGE_SPEC.md`
-- [ ] T007 [P] [US1] Align active phase, gate order, and immediate-work language in `docs/TASKS.md` and `docs/NEXT_STEPS.md`
-- [ ] T008 [P] [US1] Align stage boundaries and narrow-slice guidance in `docs/ARCHITECTURE.md` and `docs/LVGL_MAPPING.md`
-- [ ] T009 [P] [US1] Align project overview, roadmap wording, and current-status messaging in `README.md`
-- [ ] T010 [US1] Update the normative fixture in `examples/minimal/ui/screens/home.lui` and `examples/minimal/ui/styles/theme.lus` so every construct is explicitly ratified
-- [ ] T011 [P] [US1] Mark aspirational fixture status and out-of-scope constructs in `examples/dashboard/README.md`, `examples/dashboard/ui/screens/dashboard.lui`, and `examples/dashboard/ui/styles/theme.lus`
-- [ ] T012 [US1] Align starter project output with the ratified first slice in `cli/src/main.rs`
-- [ ] T013 [US1] Terminology and status-wording consistency pass across `docs/LANGUAGE_SPEC.md`, `README.md`, `examples/minimal/README.md`, and `examples/dashboard/README.md`: ensure the same terms are used for ratified constructs, deferred constructs, normative fixtures, and aspirational fixtures in every doc; this is a writing task - no content changes beyond wording alignment
+- [x] T006 [US1] Ratify the supported markup grammar, style grammar, widget set, selector surface, and event/binding policy in `docs/LANGUAGE_SPEC.md`
+- [x] T007 [P] [US1] Align active phase, gate order, and immediate-work language in `docs/TASKS.md` and `docs/NEXT_STEPS.md`
+- [x] T008 [P] [US1] Align stage boundaries and narrow-slice guidance in `docs/ARCHITECTURE.md` and `docs/LVGL_MAPPING.md`
+- [x] T009 [P] [US1] Align project overview, roadmap wording, and current-status messaging in `README.md`
+- [x] T010 [US1] Update the normative fixture in `examples/minimal/ui/screens/home.lui` and `examples/minimal/ui/styles/theme.lus` so every construct is explicitly ratified
+- [x] T011 [P] [US1] Mark aspirational fixture status and out-of-scope constructs in `examples/dashboard/README.md`, `examples/dashboard/ui/screens/dashboard.lui`, and `examples/dashboard/ui/styles/theme.lus`
+- [x] T012 [US1] Align starter project output with the ratified first slice in `cli/src/main.rs`
+- [x] T013 [US1] Terminology and status-wording consistency pass across `docs/LANGUAGE_SPEC.md`, `README.md`, `examples/minimal/README.md`, and `examples/dashboard/README.md`: ensure the same terms are used for ratified constructs, deferred constructs, normative fixtures, and aspirational fixtures in every doc; this is a writing task - no content changes beyond wording alignment
 
 **Checkpoint**: The repo has one explicit, reviewable first-slice contract, one clearly labeled normative fixture, one clearly labeled aspirational fixture, and starter output that matches the ratified subset.
 
@@ -66,12 +66,12 @@
 
 **Decision Gate**: Changes to diagnostics contracts, parser-facing node contracts, canonical IR shape, or observable logging seams should be supported by written tradeoff analysis and explicit developer sign-off before downstream stages depend on them.
 
-- [ ] T014 Update span-aware diagnostic structures, rendering, and stage-level instrumentation seams in `compiler/src/diagnostics.rs` and `compiler/src/lib.rs`
-- [ ] T015 [P] Preserve deterministic source discovery and project layout contracts in `compiler/src/project.rs` and `compiler/src/config.rs`
-- [ ] T016 [P] Extend parser-facing node contracts for the ratified selector and event-reference surface in `parser/src/ast.rs` and `parser/src/lib.rs`
-- [ ] T017 [P] Define canonical first-slice IR type definitions and field contracts for ratified widgets, normalized styles, and event metadata in `ir/src/lib.rs` - type definitions and struct shapes only; no business logic, lowering, or ownership annotations (those are added in T031 after T032 semantic lowering is available)
-- [ ] T018 [P] Add snapshot and observable logging participation rules to `tests/README.md` (builds on T003 category scaffold): document which fixture categories participate in snapshot regression, which are expected-fail, and how logging output is captured per category; update `backend/lvgl_c/tests/generation.rs` to reflect these participation rules
-- [ ] T019 Diff-review `docs/LVGL_MAPPING.md` against the ratified first-slice widget and property set: confirm every listed construct has a named LVGL 9.x primitive mapping and no construct exceeds the ratified subset - raise any over-claim as an errata note; explicitly verify brownfield feature docs cite `.specify/memory/constitution.md` as the governing authority and treat `docs/archive/CONSTITUTION.md` as archival-only context where it is referenced (see FR-001)
+- [x] T014 Update span-aware diagnostic structures, rendering, and stage-level instrumentation seams in `compiler/src/diagnostics.rs` and `compiler/src/lib.rs`
+- [x] T015 [P] Preserve deterministic source discovery and project layout contracts in `compiler/src/project.rs` and `compiler/src/config.rs`
+- [x] T016 [P] Extend parser-facing node contracts for the ratified selector and event-reference surface in `parser/src/ast.rs` and `parser/src/lib.rs`
+- [x] T017 [P] Define canonical first-slice IR type definitions and field contracts for ratified widgets, normalized styles, and event metadata in `ir/src/lib.rs` - type definitions and struct shapes only; no business logic, lowering, or ownership annotations (those are added in T031 after T032 semantic lowering is available)
+- [x] T018 [P] Add snapshot and observable logging participation rules to `tests/README.md` (builds on T003 category scaffold): document which fixture categories participate in snapshot regression, which are expected-fail, and how logging output is captured per category; update `backend/lvgl_c/tests/generation.rs` to reflect these participation rules
+- [x] T019 Diff-review `docs/LVGL_MAPPING.md` against the ratified first-slice widget and property set: confirm every listed construct has a named LVGL 9.x primitive mapping and no construct exceeds the ratified subset - raise any over-claim as an errata note; explicitly verify brownfield feature docs cite `.specify/memory/constitution.md` as the governing authority and treat `docs/archive/CONSTITUTION.md` as archival-only context where it is referenced (see FR-001)
 
 **Checkpoint**: Shared diagnostics, discovery, AST, IR, and fixture/snapshot participation rules are ready for code-bearing story implementation.
 
@@ -85,17 +85,17 @@
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T020 [P] [US2] Add parser and lexer success and failure coverage for the ratified subset: parser tests in `parser/src/parse.rs` covering valid and invalid first-slice markup and style documents; lexer tests covering token edge cases, unknown characters, binding-syntax token rejection, and span boundary correctness in `parser/src/lexer.rs`
-- [ ] T021 [P] [US2] Add semantic validation and observable diagnostic/logging coverage for duplicate ids, unsupported widgets, unsupported properties, event references, and binding rejection in `semantic/src/lib.rs`
-- [ ] T022 [P] [US2] Wire shared invalid fixtures into regression scenarios in `tests/fixtures/unsupported_widget.lui`, `tests/fixtures/binding_reference.lui`, `tests/fixtures/unsupported_selector.lus`, `tests/fixtures/unsupported_property.lus`, and `tests/fixtures/duplicate_ids.lui`
+- [x] T020 [P] [US2] Add parser and lexer success and failure coverage for the ratified subset: parser tests in `parser/src/parse.rs` covering valid and invalid first-slice markup and style documents; lexer tests covering token edge cases, unknown characters, binding-syntax token rejection, and span boundary correctness in `parser/src/lexer.rs`
+- [x] T021 [P] [US2] Add semantic validation and observable diagnostic/logging coverage for duplicate ids, unsupported widgets, unsupported properties, event references, and binding rejection in `semantic/src/lib.rs`
+- [x] T022 [P] [US2] Wire shared invalid fixtures into regression scenarios in `tests/fixtures/unsupported_widget.lui`, `tests/fixtures/binding_reference.lui`, `tests/fixtures/unsupported_selector.lus`, `tests/fixtures/unsupported_property.lus`, and `tests/fixtures/duplicate_ids.lui`
 
 ### Implementation for User Story 2
 
-- [ ] T023 [US2] Implement ratified markup and style parsing in `parser/src/parse.rs` and `parser/src/lexer.rs`
-- [ ] T024 [P] [US2] Update exported parser node shapes and parse outcomes in `parser/src/ast.rs` and `parser/src/lib.rs`
-- [ ] T025 [US2] Implement source-located parse and validation diagnostics plus deterministic validation-stage logging in `compiler/src/diagnostics.rs` and `semantic/src/lib.rs`
-- [ ] T026 [US2] Implement supported-surface validation, event-reference handling, binding rejection, and clean single-purpose semantic helpers in `semantic/src/lib.rs`
-- [ ] T027 [US2] Wire deterministic validate-command behavior and operator-meaningful logging over parsed documents in `cli/src/main.rs` and `compiler/src/project.rs`
+- [x] T023 [US2] Implement ratified markup and style parsing in `parser/src/parse.rs` and `parser/src/lexer.rs`
+- [x] T024 [P] [US2] Update exported parser node shapes and parse outcomes in `parser/src/ast.rs` and `parser/src/lib.rs`
+- [x] T025 [US2] Implement source-located parse and validation diagnostics plus deterministic validation-stage logging in `compiler/src/diagnostics.rs` and `semantic/src/lib.rs`
+- [x] T026 [US2] Implement supported-surface validation, event-reference handling, binding rejection, and clean single-purpose semantic helpers in `semantic/src/lib.rs`
+- [x] T027 [US2] Wire deterministic validate-command behavior and operator-meaningful logging over parsed documents in `cli/src/main.rs` and `compiler/src/project.rs`
 
 **Checkpoint**: `validate` becomes a trustworthy phase-gated command for the normative example and the shared expected-fail fixtures.
 
@@ -111,17 +111,17 @@
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T028 [P] [US3] Add canonical IR lowering coverage for the minimal slice in `semantic/src/lib.rs` and `ir/src/lib.rs`
-- [ ] T029 [P] [US3] Add frontend-driven backend snapshot coverage, including ownership-boundary expectations, in `backend/lvgl_c/tests/generation.rs` and `tests/snapshots/minimal_screen.c`
-- [ ] T030 [P] [US3] Add build-command smoke coverage for the minimal project, success/failure logging expectations, and explicit non-participation or expected-fail handling for aspirational fixtures in `cli/src/main.rs` and `backend/lvgl_c/tests/generation.rs`
+- [x] T028 [P] [US3] Add canonical IR lowering coverage for the minimal slice in `semantic/src/lib.rs` and `ir/src/lib.rs`
+- [x] T029 [P] [US3] Add frontend-driven backend snapshot coverage, including ownership-boundary expectations, in `backend/lvgl_c/tests/generation.rs` and `tests/snapshots/minimal_screen.c`
+- [x] T030 [P] [US3] Add build-command smoke coverage for the minimal project, success/failure logging expectations, and explicit non-participation or expected-fail handling for aspirational fixtures in `cli/src/main.rs` and `backend/lvgl_c/tests/generation.rs`
 
 ### Implementation for User Story 3
 
-- [ ] T031 [US3] Extend `ir/src/lib.rs` with ownership annotations and style-application IR nodes not available until T032 semantic lowering is implemented: add the compiler-owned/user-owned region markers and style-application relationships required by the backend ownership model (depends on T017 type contracts and T032 lowering work)
-- [ ] T032 [US3] Implement semantic lowering from parsed documents into canonical IR in `semantic/src/lib.rs`
-- [ ] T033 [US3] Implement deterministic first-slice LVGL emission with compiler-owned and user-owned region boundaries plus backend-stage logging hooks in `backend/lvgl_c/src/lib.rs`
-- [ ] T034 [US3] Wire `lumaui build` to parse, validate, lower, generate into `output_dir`, and emit stage-scoped logging in `cli/src/main.rs`
-- [ ] T035 [US3] Reconcile generated-file naming, stable ordering, ownership-boundary output, and snapshot expectations in `backend/lvgl_c/src/lib.rs`, `backend/lvgl_c/tests/generation.rs`, and `tests/snapshots/minimal_screen.c`
+- [x] T031 [US3] Extend `ir/src/lib.rs` with ownership annotations and style-application IR nodes not available until T032 semantic lowering is implemented: add the compiler-owned/user-owned region markers and style-application relationships required by the backend ownership model (depends on T017 type contracts and T032 lowering work)
+- [x] T032 [US3] Implement semantic lowering from parsed documents into canonical IR in `semantic/src/lib.rs`
+- [x] T033 [US3] Implement deterministic first-slice LVGL emission with compiler-owned and user-owned region boundaries plus backend-stage logging hooks in `backend/lvgl_c/src/lib.rs`
+- [x] T034 [US3] Wire `lumaui build` to parse, validate, lower, generate into `output_dir`, and emit stage-scoped logging in `cli/src/main.rs`
+- [x] T035 [US3] Reconcile generated-file naming, stable ordering, ownership-boundary output, and snapshot expectations in `backend/lvgl_c/src/lib.rs`, `backend/lvgl_c/tests/generation.rs`, and `tests/snapshots/minimal_screen.c`
 
 **Checkpoint**: The minimal example builds end to end into deterministic LVGL artifacts with explicit ownership semantics and visible snapshot/test scope.
 
@@ -131,10 +131,10 @@
 
 **Purpose**: Lock in consistency, determinism, and operator guidance across the completed slice.
 
-- [ ] T036 [P] Update execution guidance, TDD expectations, documentation practices, and verification steps in `docs/TASKS.md`, `docs/NEXT_STEPS.md`, and `specs/001-brownfield-spec/quickstart.md`
-- [ ] T037 [P] Final wording-consistency pass on `tests/README.md`, `examples/minimal/README.md`, and `examples/dashboard/README.md`: confirm category labels, participation rules, and aspirational/normative distinctions use consistent terminology; no structural changes - raise any structural issues as errata against T003 or T018
-- [ ] T038 Verify `validate` and `build` behavior plus observable logging behavior against `examples/minimal` and expected-fail fixtures; confirm operator-visible output matches the contracts in `contracts/cli-commands.md`; raise any discrepancies as errata against T027 (validate) or T034 (build) rather than applying inline fixes - `doctor` command implementation is explicitly deferred to a later feature slice
-- [ ] T039 Review preview deferral messaging, generated-output ownership wording, LVGL mapping consistency, and default-versus-verbose logging guidance in `cli/src/main.rs`, `backend/lvgl_c/src/lib.rs`, and `docs/LVGL_MAPPING.md`
+- [x] T036 [P] Update execution guidance, TDD expectations, documentation practices, and verification steps in `docs/TASKS.md`, `docs/NEXT_STEPS.md`, and `specs/001-brownfield-spec/quickstart.md`
+- [x] T037 [P] Final wording-consistency pass on `tests/README.md`, `examples/minimal/README.md`, and `examples/dashboard/README.md`: confirm category labels, participation rules, and aspirational/normative distinctions use consistent terminology; no structural changes - raise any structural issues as errata against T003 or T018
+- [x] T038 Verify `validate` and `build` behavior plus observable logging behavior against `examples/minimal` and expected-fail fixtures; confirm operator-visible output matches the contracts in `contracts/cli-commands.md`; raise any discrepancies as errata against T027 (validate) or T034 (build) rather than applying inline fixes - `doctor` command implementation is explicitly deferred to a later feature slice
+- [x] T039 Review preview deferral messaging, generated-output ownership wording, LVGL mapping consistency, and default-versus-verbose logging guidance in `cli/src/main.rs`, `backend/lvgl_c/src/lib.rs`, and `docs/LVGL_MAPPING.md`
 
 ---
 

@@ -6,10 +6,17 @@ This changelog is separate from the repository release changelog in `CHANGELOG.m
 
 ## [Unreleased]
 
+## [LS-0.2.0] - 2026-04-22
+
+### Added
+
+- Ratified the first MVP slice: markup grammar (`Screen`, `Column`, `Row`, `Text`, `Button`), `id` / `class` / `text` / `onPress` attributes, and the style grammar covering class- and id-selectors with the `padding`, `background-color`, `text-color`, `width`, and `height` properties.
+- Ratified the deterministic style application rule (last-rule-wins, no specificity cascade) and the named event-reference rule (`onPress` only).
+
 ### Changed
 
-- Established a dedicated language-specification versioning policy separate from the workspace version.
-- Clarified that `docs/LANGUAGE_SPEC.md` tracks its own language-contract version and revision history.
+- Promoted `docs/LANGUAGE_SPEC.md` from provisional baseline to first-slice ratified contract.
+- Documented the explicit rejection of bindings (`bind="…"`) for the first slice.
 
 ## [LS-0.1.0] - 2026-04-05
 

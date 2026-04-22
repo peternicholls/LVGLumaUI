@@ -10,15 +10,17 @@ Major language, architecture, mapping, and observability decisions are also hand
 
 ## Current Phase
 
-The project is currently in `Phase 0: Foundation`.
+The project is currently in `Phase 6: Polish`.
 
-Phase 0 means:
+The first-slice compiler pipeline is implemented end-to-end:
 
-- the repository shape is in place
-- the compiler pipeline boundaries are defined
-- examples exist as provisional fixtures
-- the authored language is not frozen yet
-- end-to-end compilation is not complete yet
+- `LS-0.2.0` ratifies the first authored-language slice (`docs/LANGUAGE_SPEC.md`).
+- `parser/` ships a span-aware lexer and recursive-descent markup + style parsers.
+- `semantic/` validates the ratified slice and lowers to `lumaui-ir`.
+- `backend/lvgl_c/` emits deterministic LVGL 9.x `.h` + `.c` files with style application, event registration, and ownership-region markers.
+- `cli/` orchestrates `init`, `validate`, `build`, `doctor` through the real pipeline; `lumaui build` writes generated output to disk.
+
+Broader language surface (margin, radius, fonts, additional widgets, bindings, preview) remains deferred. Adding any of it requires a decision brief and a `MINOR` language-spec bump.
 
 ## Why Rust
 
@@ -49,14 +51,14 @@ LumaUI is not:
 
 ## Current Status
 
-This repo intentionally prioritizes foundation over breadth.
+This repo prioritizes a narrow, ratified first slice over breadth.
 
 - The documentation pack is in place.
 - The Rust workspace is scaffolded by compiler stage.
-- The CLI surface is defined.
-- Examples exist as provisional authoring fixtures.
-- Lexer, diagnostics, config loading, source discovery, IR types, and LVGL C generation scaffolds are implemented.
-- Full authored-language parsing and semantic lowering are explicitly deferred to the next phase.
+- The CLI surface is wired through real parser, semantic, IR, and backend stages.
+- `examples/minimal` is a normative end-to-end fixture; `examples/dashboard` is aspirational and explicitly labeled.
+- Lexer, parser, diagnostics, config loading, source discovery, IR types, semantic validation, and LVGL C generation are implemented for the ratified slice.
+- Bindings, additional widgets, and richer style surfaces are explicitly deferred.
 
 ## Workspace Layout
 
@@ -127,7 +129,7 @@ cargo run -p lumaui-cli -- validate examples/minimal
 cargo test
 ```
 
-`lumaui build` is wired as a compiler-stage command surface, but the source-language frontend is still under active implementation.
+`lumaui build` is fully wired against the real pipeline and writes generated LVGL C to `<project>/generated/ui/`.
 
 Operator-facing commands are expected to remain deterministic and reviewable. Diagnostics should stay stable and actionable, while progress logging should remain stage-scoped and separate from generated output.
 
@@ -137,7 +139,7 @@ For the standard repository verification bundle during the current brownfield sl
 ./scripts/lumaui-phase-check.sh
 ```
 
-That script runs the workspace tests plus `lumaui doctor` and `lumaui validate` against `examples/minimal`. It treats `lumaui build` as gated by default and only requires it with `--require-build`.
+That script runs the workspace tests plus `lumaui doctor` and `lumaui validate` against `examples/minimal`. By default `lumaui build` is gated; pass `--require-build` to require a successful end-to-end build (currently passes).
 
 ## First-Pass Goals
 
