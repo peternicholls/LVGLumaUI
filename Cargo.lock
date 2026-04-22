@@ -140,14 +140,14 @@ checksum = "a6cb138bb79a146c1bd460005623e142ef0181e3d0219cb493e02f7d08a35695"
 
 [[package]]
 name = "lumaui-backend-lvgl-c"
-version = "0.1.0"
+version = "1.0.0-beta.1"
 dependencies = [
  "lumaui-ir",
 ]
 
 [[package]]
 name = "lumaui-cli"
-version = "0.1.0"
+version = "1.0.0-beta.1"
 dependencies = [
  "anyhow",
  "clap",
@@ -159,7 +159,7 @@ dependencies = [
 
 [[package]]
 name = "lumaui-compiler"
-version = "0.1.0"
+version = "1.0.0-beta.1"
 dependencies = [
  "anyhow",
  "serde",
@@ -168,18 +168,18 @@ dependencies = [
 
 [[package]]
 name = "lumaui-ir"
-version = "0.1.0"
+version = "1.0.0-beta.1"
 
 [[package]]
 name = "lumaui-parser"
-version = "0.1.0"
+version = "1.0.0-beta.1"
 dependencies = [
  "lumaui-compiler",
 ]
 
 [[package]]
 name = "lumaui-semantic"
-version = "0.1.0"
+version = "1.0.0-beta.1"
 dependencies = [
  "lumaui-compiler",
  "lumaui-ir",

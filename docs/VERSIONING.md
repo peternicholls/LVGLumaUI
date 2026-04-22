@@ -37,41 +37,43 @@ This separation is intentional because the repository can refine compiler implem
 
 ## Scheme
 
-LumaUI uses Semantic Versioning with a pre-1.0 discipline.
+LumaUI uses Semantic Versioning with prerelease tags for the beta line.
 
 Format:
 
 - `MAJOR.MINOR.PATCH`
+- `MAJOR.MINOR.PATCH-PRERELEASE.N`
 
-While the project remains below `1.0.0`:
+Current release line:
 
-- `0.MINOR.0` is used for meaningful slice expansion, contract reshaping, or intentional breaking changes
-- `0.MINOR.PATCH` is used for compatible fixes, documentation corrections, test updates, and non-breaking implementation improvements inside the current slice
+- `0.1.0` remains the initial public repository baseline.
+- `1.0.0-beta.N` is the active beta track for the first coherent end-to-end compiler slice.
+- `1.0.0` is reserved for the first stable release once the repository, operator-facing contracts, and release process are judged stable enough to drop the beta label.
 
 Examples:
 
 - `0.1.0` initial public repository baseline
-- `0.2.0` ratified first MVP language slice with breaking parser or CLI contract changes permitted
-- `0.2.1` compatible bug fix or documentation-only follow-up on the `0.2.x` line
+- `1.0.0-beta.1` first beta release for the implemented MVP compiler pipeline
+- `1.0.0-beta.2` follow-up beta release with additional release-facing changes before stable `1.0.0`
 
-## What Counts As Breaking Before 1.0
+## Beta Release Rules
 
-Before `1.0.0`, treat the following as minor-version changes rather than patch releases:
+While the repository remains on the `1.0.0-beta.N` line:
 
-- authored-language grammar changes
-- CLI command contract changes
-- semantic or IR contract changes that affect downstream expectations
-- generated C structure or ownership-boundary policy changes
-- snapshot-visible output changes that are intentional rather than bug fixes
+- increment the beta ordinal for each new release candidate shipped before stable `1.0.0`
+- include release-facing parser, semantic, backend, CLI, documentation, or packaging changes in the changelog for each beta cut
+- treat intentional generated-output changes, CLI contract changes, and ratified language-surface changes as beta-worthy release notes, not patch-noise
+- do not create a `1.0.1` patch line before the first stable `1.0.0` release exists
 
-Patch releases should avoid intentional breaking changes.
+The move from beta to stable `1.0.0` should be an explicit release decision, not an incidental version bump.
 
 ## Tags
 
 Release tags should use the form:
 
 - `v0.1.0`
-- `v0.2.0`
+- `v1.0.0-beta.1`
+- `v1.0.0`
 
 Do not tag phase branches independently. Phase branches are delivery branches, not release lines.
 
@@ -109,6 +111,8 @@ When cutting a release:
 5. Tag the release as `vX.Y.Z` from the release commit.
 
 If the release also ratifies or revises the authored-language contract, update the `Language Spec Version` in `docs/LANGUAGE_SPEC.md` and move the relevant notes from `docs/LANGUAGE_CHANGELOG.md` in the same change.
+
+For beta releases, tag from the release commit after the branch intended to become `main` contains the final version and changelog update for that cut.
 
 ## Branch Workflow Interaction
 

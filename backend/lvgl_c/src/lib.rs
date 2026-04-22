@@ -7,6 +7,9 @@
 use lumaui_ir::{AppliedStyles, HexColor, Project, Screen, Widget, WidgetKind};
 use std::fmt::Write as _;
 
+const BODY_INDENT: &str = "  ";
+const CONTINUATION_INDENT: &str = "                      ";
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct GeneratedFile {
     pub path: String,
@@ -55,7 +58,7 @@ fn generate_source(
 
     // Root: always create against the supplied parent.
     let root_var = emit.fresh_var(screen.root.kind);
-    emit.line(format!("    lv_obj_t *{root_var} = lv_obj_create(parent);"));
+    emit.line(format!("{BODY_INDENT}lv_obj_t *{root_var} = lv_obj_create(parent);"));
     emit.apply_layout(&root_var, &screen.root);
     emit.apply_styles(&root_var, &screen.root.applied_styles);
     emit.attach_event(&root_var, &screen.root);
@@ -64,7 +67,7 @@ fn generate_source(
         emit.emit_widget(&root_var, child);
     }
 
-    emit.line(format!("    return {root_var};"));
+    emit.line(format!("{BODY_INDENT}return {root_var};"));
     emit.line("}".into());
     emit.write_epilogue();
 
@@ -122,28 +125,28 @@ impl<'a> SourceEmitter<'a> {
                 // Screens only appear at the document root; nested Screens are
                 // rejected at the semantic stage.
                 self.line(format!(
-                    "    lv_obj_t *{var} = lv_obj_create({parent_var});"
+                    "{BODY_INDENT}lv_obj_t *{var} = lv_obj_create({parent_var});"
                 ));
             }
             WidgetKind::Column | WidgetKind::Row => {
                 self.line(format!(
-                    "    lv_obj_t *{var} = lv_obj_create({parent_var});"
+                    "{BODY_INDENT}lv_obj_t *{var} = lv_obj_create({parent_var});"
                 ));
             }
             WidgetKind::Text => {
                 self.line(format!(
-                    "    lv_obj_t *{var} = lv_label_create({parent_var});"
+                    "{BODY_INDENT}lv_obj_t *{var} = lv_label_create({parent_var});"
                 ));
                 if let Some(text) = &widget.text {
                     self.line(format!(
-                        "    lv_label_set_text({var}, {});",
+                        "{BODY_INDENT}lv_label_set_text({var}, {});",
                         c_string_literal(text)
                     ));
                 }
             }
             WidgetKind::Button => {
                 self.line(format!(
-                    "    lv_obj_t *{var} = lv_button_create({parent_var});"
+                    "{BODY_INDENT}lv_obj_t *{var} = lv_button_create({parent_var});"
                 ));
             }
         }
@@ -161,12 +164,12 @@ impl<'a> SourceEmitter<'a> {
         match widget.kind {
             WidgetKind::Column => {
                 self.line(format!(
-                    "    lv_obj_set_flex_flow({var}, LV_FLEX_FLOW_COLUMN);"
+                    "{BODY_INDENT}lv_obj_set_flex_flow({var}, LV_FLEX_FLOW_COLUMN);"
                 ));
             }
             WidgetKind::Row => {
                 self.line(format!(
-                    "    lv_obj_set_flex_flow({var}, LV_FLEX_FLOW_ROW);"
+                    "{BODY_INDENT}lv_obj_set_flex_flow({var}, LV_FLEX_FLOW_ROW);"
                 ));
             }
             _ => {}
@@ -179,27 +182,27 @@ impl<'a> SourceEmitter<'a> {
         }
         if let Some(p) = styles.padding {
             self.line(format!(
-                "    lv_obj_set_style_pad_all({var}, {p}, LV_PART_MAIN);"
+                "{BODY_INDENT}lv_obj_set_style_pad_all({var}, {p}, LV_PART_MAIN);"
             ));
         }
         if let Some(w) = styles.width {
-            self.line(format!("    lv_obj_set_width({var}, {w});"));
+            self.line(format!("{BODY_INDENT}lv_obj_set_width({var}, {w});"));
         }
         if let Some(h) = styles.height {
-            self.line(format!("    lv_obj_set_height({var}, {h});"));
+            self.line(format!("{BODY_INDENT}lv_obj_set_height({var}, {h});"));
         }
         if let Some(bg) = &styles.background_color {
             self.line(format!(
-                "    lv_obj_set_style_bg_color({var}, lv_color_hex({}), LV_PART_MAIN);",
+                "{BODY_INDENT}lv_obj_set_style_bg_color({var}, lv_color_hex({}), LV_PART_MAIN);",
                 bg.lvgl_hex_literal()
             ));
             self.line(format!(
-                "    lv_obj_set_style_bg_opa({var}, LV_OPA_COVER, LV_PART_MAIN);"
+                "{BODY_INDENT}lv_obj_set_style_bg_opa({var}, LV_OPA_COVER, LV_PART_MAIN);"
             ));
         }
         if let Some(tc) = &styles.text_color {
             self.line(format!(
-                "    lv_obj_set_style_text_color({var}, lv_color_hex({}), LV_PART_MAIN);",
+                "{BODY_INDENT}lv_obj_set_style_text_color({var}, lv_color_hex({}), LV_PART_MAIN);",
                 tc.lvgl_hex_literal()
             ));
         }
@@ -211,11 +214,12 @@ impl<'a> SourceEmitter<'a> {
         };
         let prefix = &self.project.symbol_prefix;
         self.line(format!(
-            "    /* TODO(user): provide `void {prefix}event_{handler}(lv_event_t *e);` */"
+            "{BODY_INDENT}/* TODO(user): provide `void {prefix}event_{handler}(lv_event_t *e);` */"
         ));
         self.line(format!(
-            "    lv_obj_add_event_cb({var}, {prefix}event_{handler}, LV_EVENT_CLICKED, NULL);"
+            "{BODY_INDENT}lv_obj_add_event_cb({var}, {prefix}event_{handler}, LV_EVENT_CLICKED,"
         ));
+        self.line(format!("{CONTINUATION_INDENT}NULL);"));
     }
 }
 
