@@ -279,11 +279,7 @@ impl<'a> Parser<'a> {
                     });
                 }
                 Some(TokenKind::Identifier) => {
-                    if let Some(decl) = self.parse_declaration() {
-                        declarations.push(decl);
-                    } else {
-                        return None;
-                    }
+                    declarations.push(self.parse_declaration()?);
                 }
                 Some(_) => {
                     let t = self.peek().cloned().unwrap();

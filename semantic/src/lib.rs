@@ -147,11 +147,10 @@ pub fn analyze_documents(input: AnalysisInput, documents: &[Document]) -> Analys
 }
 
 fn derive_screen_name(source_name: &str) -> String {
-    let stem = std::path::Path::new(source_name)
+    std::path::Path::new(source_name)
         .file_stem()
         .map(|s| s.to_string_lossy().into_owned())
-        .unwrap_or_else(|| source_name.to_string());
-    stem
+        .unwrap_or_else(|| source_name.to_string())
 }
 
 fn sort_diagnostics(diagnostics: &mut [Diagnostic]) {
