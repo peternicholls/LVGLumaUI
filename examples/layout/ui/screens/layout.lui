@@ -1,0 +1,9 @@
+<Screen>
+  <Row class="root">
+    <Column id="abcdef">
+      <Text text="Layout example"/>
+      <Button/>
+    </Column>
+    <Text text="Second column"/>
+  </Row>
+</Screen>

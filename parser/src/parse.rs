@@ -10,10 +10,7 @@ use std::path::Path;
 
 pub fn parse_document(path: &Path, source: &str) -> Result<Document, Vec<Diagnostic>> {
     let kind = classify_kind(path);
-    let source_name = path
-        .file_name()
-        .map(|s| s.to_string_lossy().into_owned())
-        .unwrap_or_else(|| path.display().to_string());
+    let source_name = path.display().to_string();
     let tokens = lex(path, source)?;
     let mut parser = Parser::new(path, tokens, source_name, kind);
     parser.parse();
@@ -37,6 +34,7 @@ struct Parser<'a> {
     cursor: usize,
     diagnostics: Vec<Diagnostic>,
     document: Document,
+    depth: usize,
 }
 
 impl<'a> Parser<'a> {
@@ -47,6 +45,7 @@ impl<'a> Parser<'a> {
             cursor: 0,
             diagnostics: Vec::new(),
             document: Document::new(source_name, kind),
+            depth: 0,
         }
     }
 
@@ -125,6 +124,22 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_widget(&mut self) -> Option<WidgetNode> {
+        if self.depth >= 128 {
+            self.error(
+                "widget nesting exceeds the 128-level compiler limit",
+                self.last_span(),
+                None,
+            );
+            self.cursor = self.tokens.len();
+            return None;
+        }
+        self.depth += 1;
+        let result = self.parse_widget_inner();
+        self.depth -= 1;
+        result
+    }
+
+    fn parse_widget_inner(&mut self) -> Option<WidgetNode> {
         let open = self.expect(TokenKind::OpenAngle, "`<`")?;
         let name_tok = self.expect(TokenKind::Identifier, "widget name")?;
         let widget_type = name_tok.lexeme.clone();
@@ -291,6 +306,10 @@ impl<'a> Parser<'a> {
     fn parse_selector(&mut self) -> Option<(Selector, Span)> {
         let head = self.peek().cloned()?;
         match head.kind {
+            TokenKind::HexColor if head.lexeme.as_bytes()[1].is_ascii_alphabetic() => {
+                self.advance();
+                Some((Selector::Id(head.lexeme[1..].to_owned()), head.span))
+            }
             TokenKind::Dot => {
                 self.advance();
                 let name = self.expect(TokenKind::Identifier, "class selector name")?;

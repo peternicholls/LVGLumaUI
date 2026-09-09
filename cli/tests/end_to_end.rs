@@ -10,7 +10,7 @@ use std::process::Command;
 use std::sync::atomic::{AtomicU64, Ordering};
 
 fn cli_binary() -> PathBuf {
-    PathBuf::from(env!("CARGO_BIN_EXE_lumaui-cli"))
+    PathBuf::from(env!("CARGO_BIN_EXE_lumaui"))
 }
 
 fn unique_dir(prefix: &str) -> PathBuf {
@@ -88,10 +88,12 @@ fn build_minimal_example_matches_snapshot_for_home_screen() {
     let source = fs::read_to_string(&generated_source).expect("generated source missing");
     let header = fs::read_to_string(&generated_header).expect("generated header missing");
 
-    let expected_source = fs::read_to_string(workspace_root.join("tests/snapshots/minimal_screen.c"))
-        .expect("expected source snapshot missing");
-    let expected_header = fs::read_to_string(workspace_root.join("tests/snapshots/minimal_screen.h"))
-        .expect("expected header snapshot missing");
+    let expected_source =
+        fs::read_to_string(workspace_root.join("tests/snapshots/minimal_screen.c"))
+            .expect("expected source snapshot missing");
+    let expected_header =
+        fs::read_to_string(workspace_root.join("tests/snapshots/minimal_screen.h"))
+            .expect("expected header snapshot missing");
 
     assert_eq!(
         normalize_generated_prefix(&source),
@@ -134,4 +136,66 @@ fn validate_rejects_unsupported_widget_fixture() {
     );
 
     let _ = fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn colliding_output_names_fail_without_writing() {
+    let dir = unique_dir("collision");
+    assert!(run(&["init", dir.to_str().unwrap()]).status.success());
+    fs::write(
+        dir.join("ui/screens/main-screen.lui"),
+        "<Screen><Row/></Screen>",
+    )
+    .unwrap();
+    fs::write(
+        dir.join("ui/screens/main_screen.lui"),
+        "<Screen><Row/></Screen>",
+    )
+    .unwrap();
+    let out = run(&["build", dir.to_str().unwrap()]);
+    assert!(!out.status.success());
+    assert!(!dir.join("generated").exists());
+    fs::remove_dir_all(dir).unwrap();
+}
+
+#[test]
+fn wrong_lvgl_version_fails_before_generation() {
+    let dir = unique_dir("version");
+    assert!(run(&["init", dir.to_str().unwrap()]).status.success());
+    let path = dir.join("lumaui.toml");
+    let config = fs::read_to_string(&path).unwrap().replace("9.x", "8.x");
+    fs::write(path, config).unwrap();
+    assert!(!run(&["build", dir.to_str().unwrap()]).status.success());
+    assert!(!dir.join("generated").exists());
+    fs::remove_dir_all(dir).unwrap();
+}
+
+#[test]
+fn version_is_available_without_a_project() {
+    let out = run(&["--version"]);
+    assert!(out.status.success());
+    assert!(String::from_utf8_lossy(&out.stdout).contains(env!("CARGO_PKG_VERSION")));
+}
+
+#[test]
+fn regeneration_preserves_user_region_and_rejects_broken_markers() {
+    let dir = unique_dir("preserve");
+    assert!(run(&["init", dir.to_str().unwrap()]).status.success());
+    assert!(run(&["build", dir.to_str().unwrap()]).status.success());
+    let path = dir.join("generated/ui/screens/main_gen.c");
+    let original = fs::read_to_string(&path).unwrap();
+    let marker = "/* lumaui-region: user-owned begin */";
+    assert!(original.contains(marker));
+    let custom = original.replace(
+        marker,
+        &format!("{marker}\n/* my firmware implementation */"),
+    );
+    fs::write(&path, &custom).unwrap();
+    assert!(run(&["build", dir.to_str().unwrap()]).status.success());
+    assert_eq!(fs::read_to_string(&path).unwrap(), custom);
+    let broken = custom.replace("/* lumaui-region: user-owned end */", "");
+    fs::write(&path, &broken).unwrap();
+    assert!(!run(&["build", dir.to_str().unwrap()]).status.success());
+    assert_eq!(fs::read_to_string(&path).unwrap(), broken);
+    fs::remove_dir_all(dir).unwrap();
 }

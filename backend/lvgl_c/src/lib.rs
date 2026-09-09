@@ -5,7 +5,44 @@
 //! and emits a header + implementation pair plus stable lifecycle hooks.
 
 use lumaui_ir::{AppliedStyles, HexColor, Project, Screen, Widget, WidgetKind};
+use std::collections::BTreeSet;
 use std::fmt::Write as _;
+
+pub const USER_BEGIN: &str = "/* lumaui-region: user-owned begin */";
+pub const USER_END: &str = "/* lumaui-region: user-owned end */";
+
+/// Preserve the single explicit user region; fail closed on damaged markers.
+pub fn preserve_user_region(existing: &str, generated: &str) -> Result<String, String> {
+    if !existing.starts_with("/* lumaui-region: compiler-owned begin */") {
+        return Err("refusing to overwrite a file without LumaUI ownership markers".into());
+    }
+    let begin_count = existing.matches(USER_BEGIN).count();
+    let end_count = existing.matches(USER_END).count();
+    if begin_count == 0 && end_count == 0 {
+        return Ok(generated.to_owned());
+    }
+    if begin_count != 1 || end_count != 1 {
+        return Err("invalid or duplicate user-owned region markers".into());
+    }
+    let start = existing.find(USER_BEGIN).unwrap() + USER_BEGIN.len();
+    let end = existing.find(USER_END).unwrap();
+    if end < start {
+        return Err("user-owned region markers are out of order".into());
+    }
+    let new_start = generated
+        .find(USER_BEGIN)
+        .ok_or("generated file has no user-owned region")?
+        + USER_BEGIN.len();
+    let new_end = generated
+        .find(USER_END)
+        .ok_or("generated file has no closing user-owned marker")?;
+    Ok(format!(
+        "{}{}{}",
+        &generated[..new_start],
+        &existing[start..end],
+        &generated[new_end..]
+    ))
+}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct GeneratedFile {
@@ -18,13 +55,18 @@ pub fn generate_files(project: &Project) -> Vec<GeneratedFile> {
     for screen in &project.screens {
         let slug = slugify(&screen.name);
         let create_fn = format!("{}screen_{slug}_create", project.symbol_prefix);
-        out.push(generate_header(&create_fn, &slug));
+        out.push(generate_header(project, screen, &create_fn, &slug));
         out.push(generate_source(project, screen, &create_fn, &slug));
     }
     out
 }
 
-fn generate_header(create_fn: &str, slug: &str) -> GeneratedFile {
+fn generate_header(
+    project: &Project,
+    screen: &Screen,
+    create_fn: &str,
+    slug: &str,
+) -> GeneratedFile {
     let guard = format!("LUMAUI_SCREEN_{}_GEN_H", slug.to_uppercase());
     let mut contents = String::new();
     writeln!(contents, "/* lumaui-region: compiler-owned begin */").unwrap();
@@ -34,7 +76,27 @@ fn generate_header(create_fn: &str, slug: &str) -> GeneratedFile {
     writeln!(contents).unwrap();
     writeln!(contents, "#include \"lvgl.h\"").unwrap();
     writeln!(contents).unwrap();
+    writeln!(contents, "#ifdef __cplusplus\nextern \"C\" {{\n#endif\n").unwrap();
     writeln!(contents, "lv_obj_t *{create_fn}(lv_obj_t *parent);").unwrap();
+    fn collect(widget: &Widget, handlers: &mut BTreeSet<String>) {
+        if let Some(handler) = &widget.event_press {
+            handlers.insert(handler.clone());
+        }
+        for child in &widget.children {
+            collect(child, handlers);
+        }
+    }
+    let mut handlers = BTreeSet::new();
+    collect(&screen.root, &mut handlers);
+    for handler in handlers {
+        writeln!(
+            contents,
+            "void {}event_{handler}(lv_event_t *e);",
+            project.symbol_prefix
+        )
+        .unwrap();
+    }
+    writeln!(contents, "\n#ifdef __cplusplus\n}}\n#endif").unwrap();
     writeln!(contents).unwrap();
     writeln!(contents, "#endif /* {guard} */").unwrap();
     writeln!(contents, "/* lumaui-region: compiler-owned end */").unwrap();
@@ -99,6 +161,7 @@ impl<'a> SourceEmitter<'a> {
 
     fn write_epilogue(&mut self) {
         writeln!(self.body, "/* lumaui-region: compiler-owned end */").unwrap();
+        writeln!(self.body, "\n{USER_BEGIN}\n{USER_END}").unwrap();
     }
 
     fn into_string(self) -> String {
@@ -117,6 +180,14 @@ impl<'a> SourceEmitter<'a> {
 
     fn emit_widget(&mut self, parent_var: &str, widget: &Widget) {
         let var = self.fresh_var(widget.kind);
+        if widget.kind == WidgetKind::Button
+            && widget.children.is_empty()
+            && widget.event_press.is_none()
+            && widget.applied_styles.is_empty()
+        {
+            self.line(format!("    lv_button_create({parent_var});"));
+            return;
+        }
         match widget.kind {
             WidgetKind::Screen => {
                 // Screens only appear at the document root; nested Screens are
@@ -240,7 +311,7 @@ fn c_string_literal(s: &str) -> String {
             '\r' => out.push_str("\\r"),
             '\t' => out.push_str("\\t"),
             c if (c as u32) < 0x20 => {
-                let _ = write!(out, "\\x{:02x}", c as u32);
+                let _ = write!(out, "\\{:03o}", c as u32);
             }
             c => out.push(c),
         }

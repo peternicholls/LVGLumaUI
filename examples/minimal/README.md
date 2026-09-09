@@ -1,33 +1,15 @@
-# Minimal Example
+# Minimal example — normative
 
-Status: **normative** for the ratified first slice.
+```sh
+lumaui validate examples/minimal
+lumaui build examples/minimal
+```
 
-This example is the canonical authored-source input the compiler is expected to validate and build successfully. Every construct used here is part of the ratified first slice.
+Compile `generated/ui/screens/home_gen.c` and `firmware.c` with LVGL 9.x, adding
+the generated screens directory to your include path. After setting up LVGL and
+your display, call `minimal_screen_home_create(NULL)` and `lv_screen_load`.
 
-## Support Status
-
-- `lumaui validate examples/minimal` MUST succeed.
-- `lumaui build examples/minimal` MUST succeed and emit deterministic LVGL C under `examples/minimal/generated/ui/`.
-
-## Ratified Constructs
-
-Markup:
-
-- `Screen`, `Column`, `Row`, `Text`, `Button`
-- `id="..."` and `class="..."` attributes
-- `text="..."` literal on `Text`
-- Named event references on `Button` via `onPress="handler_name"`
-
-Styles:
-
-- Class selector (`.name`) and id selector (`#name`)
-- Properties: `padding`, `background-color`, `text-color`, `width`, `height`
-
-## Deferred Constructs
-
-These remain out of scope for the first slice:
-
-- Widgets: `Container`, `Grid`, `Image`, `Card`
-- Bindings: `bind="..."` and any reactive value reference
-- Style properties beyond the ratified set (e.g. `border-radius`, `margin`, fonts)
-- Selector combinators, pseudo selectors, and tag selectors
+`firmware.c` implements the generated callback and changes the button label
+when clicked. The real LVGL smoke test exercises this behavior. This example
+is an exact frontend snapshot fixture; change its generated contract and tests
+together. See `docs/USAGE.md` for installation and firmware integration.

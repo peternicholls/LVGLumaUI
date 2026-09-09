@@ -2,9 +2,27 @@
 
 All notable changes to this repository should be recorded in this file.
 
-The format is based on Keep a Changelog and the project follows Semantic Versioning with pre-1.0 discipline as described in `docs/VERSIONING.md`.
+The format is based on Keep a Changelog and the project follows Semantic Versioning as described in `docs/VERSIONING.md`.
 
 ## [Unreleased]
+
+## [1.0.0] - 2026-09-09
+
+### Added
+
+- Usable `lumaui` CLI with init, doctor, validate, build and version reporting.
+- Completed ratified five-widget compiler pipeline, styles and named callbacks.
+- Native release archives, checksums, source-install instructions and firmware examples.
+- Cross-platform compiler/package checks and a real LVGL 9.2.2 runtime smoke test.
+
+### Fixed
+
+- Missing generated callback declarations, C++ linkage and snapshot drift.
+- Loss of user-owned code during regeneration; malformed regions now block output.
+- Acceptance of nested screens, empty projects, invalid symbol prefixes and LVGL versions.
+- Coordinate overflow, output-name collisions, hex-shaped id selectors, source-path loss,
+  carriage returns in strings, and unbounded parser recursion.
+
 
 ### Added
 

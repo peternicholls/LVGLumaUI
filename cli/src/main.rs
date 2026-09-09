@@ -6,7 +6,7 @@
 
 use anyhow::{anyhow, bail, Context, Result};
 use clap::{Parser, Subcommand};
-use lumaui_backend_lvgl_c::{generate_files, GeneratedFile};
+use lumaui_backend_lvgl_c::{generate_files, preserve_user_region, GeneratedFile};
 use lumaui_compiler::{Diagnostic, ProjectLayout, Severity, WorkspaceConfig, CONFIG_FILE_NAME};
 use lumaui_parser::{parse_document, Document};
 use lumaui_semantic::{analyze_documents, AnalysisInput};
@@ -14,7 +14,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 #[derive(Parser, Debug)]
-#[command(name = "lumaui", about = "Luma UI for LVGL — compiler CLI")]
+#[command(name = "lumaui", version, about = "Luma UI for LVGL — compiler CLI")]
 struct Cli {
     #[command(subcommand)]
     command: Command,
@@ -24,6 +24,7 @@ struct Cli {
 enum Command {
     /// Initialize a new LumaUI project on disk.
     Init {
+        #[arg(default_value = ".")]
         path: PathBuf,
         #[arg(long, default_value = "minimal")]
         name: String,
@@ -31,13 +32,25 @@ enum Command {
         force: bool,
     },
     /// Validate the authored source for a project without writing output.
-    Validate { project: PathBuf },
+    Validate {
+        #[arg(default_value = ".")]
+        project: PathBuf,
+    },
     /// Build the project and write generated LVGL C to disk.
-    Build { project: PathBuf },
+    Build {
+        #[arg(default_value = ".")]
+        project: PathBuf,
+    },
     /// Reserved: launch a preview runner. Currently gated.
-    Preview { project: PathBuf },
+    Preview {
+        #[arg(default_value = ".")]
+        project: PathBuf,
+    },
     /// Print discovery / configuration health for a project.
-    Doctor { project: PathBuf },
+    Doctor {
+        #[arg(default_value = ".")]
+        project: PathBuf,
+    },
 }
 
 fn main() -> Result<()> {
@@ -195,14 +208,32 @@ fn build_project(project: &Path) -> Result<()> {
 }
 
 fn write_generated(output_root: &Path, files: &[GeneratedFile]) -> Result<()> {
-    fs::create_dir_all(output_root)?;
+    let mut names = std::collections::BTreeSet::new();
+    let mut writes = Vec::new();
     for file in files {
+        if !names.insert(file.path.to_ascii_lowercase()) {
+            bail!(
+                "generated output name collision: {}; rename one of the source screens",
+                file.path
+            );
+        }
         let target = output_root.join(&file.path);
+        let contents = if target.exists() {
+            let existing = fs::read_to_string(&target)
+                .with_context(|| format!("reading {}", target.display()))?;
+            preserve_user_region(&existing, &file.contents)
+                .map_err(|error| anyhow!("{}: {error}", target.display()))?
+        } else {
+            file.contents.clone()
+        };
+        writes.push((target, contents));
+    }
+    // Complete collision and preservation checks before touching any output.
+    for (target, contents) in writes {
         if let Some(parent) = target.parent() {
             fs::create_dir_all(parent)?;
         }
-        fs::write(&target, &file.contents)
-            .with_context(|| format!("writing {}", target.display()))?;
+        fs::write(&target, contents).with_context(|| format!("writing {}", target.display()))?;
     }
     Ok(())
 }

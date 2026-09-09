@@ -88,3 +88,24 @@ fn empty_project_emits_no_files() {
     let project = Project::new("empty", "lumaui_");
     assert!(generate_files(&project).is_empty());
 }
+
+#[test]
+fn callbacks_have_declarations_before_registration() {
+    let mut root = Widget::new(WidgetKind::Screen);
+    let mut button = Widget::new(WidgetKind::Button);
+    button.event_press = Some("open_settings".into());
+    root.children.push(button);
+    let mut project = Project::new("demo", "app_");
+    project.screens.push(Screen {
+        name: "home".into(),
+        root,
+    });
+    let files = generate_files(&project);
+    let header = &files
+        .iter()
+        .find(|f| f.path.ends_with(".h"))
+        .unwrap()
+        .contents;
+    assert!(header.contains("void app_event_open_settings(lv_event_t *e);"));
+    assert!(header.contains("extern \"C\""));
+}

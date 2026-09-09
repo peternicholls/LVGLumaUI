@@ -1,0 +1,2 @@
+.root { width: 320; height: 180; padding: 2; }
+#abcdef { width: 120; height: 80; background-color: #112233; }

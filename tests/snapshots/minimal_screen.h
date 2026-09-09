@@ -5,7 +5,16 @@
 
 #include "lvgl.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 lv_obj_t *lumaui_screen_home_create(lv_obj_t *parent);
+void lumaui_event_open_settings(lv_event_t *e);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* LUMAUI_SCREEN_HOME_GEN_H */
 /* lumaui-region: compiler-owned end */

@@ -41,6 +41,12 @@ pub struct AnalysisInput {
 
 pub fn analyze_documents(input: AnalysisInput, documents: &[Document]) -> AnalysisOutcome {
     let mut diagnostics = Vec::new();
+    if !is_identifier(&input.symbol_prefix) {
+        diagnostics.push(
+            Diagnostic::error("symbol_prefix must be a non-empty C identifier")
+                .with_hint("use a prefix such as lumaui_"),
+        );
+    }
 
     // Split into markup screens and style rules in deterministic order.
     let mut screen_docs: Vec<&Document> = Vec::new();
@@ -52,6 +58,12 @@ pub fn analyze_documents(input: AnalysisInput, documents: &[Document]) -> Analys
         }
     }
 
+    if screen_docs.is_empty() {
+        diagnostics.push(
+            Diagnostic::error("no .lui screen documents found")
+                .with_hint("add a screen under source_dir/screens"),
+        );
+    }
     let style_rules = collect_style_rules(&style_docs, &mut diagnostics);
 
     let mut screens = Vec::new();
@@ -247,6 +259,19 @@ fn collect_style_rules(
 fn check_property_value_shape(file: &Path, decl: &Declaration) -> Option<Diagnostic> {
     let want_color = matches!(decl.name.as_str(), "background-color" | "text-color");
     let want_number = matches!(decl.name.as_str(), "padding" | "width" | "height");
+    // LVGL reserves bits 29 and 30 for coordinate type tags.
+    if let DeclarationValue::Number(n) = decl.value {
+        if want_number && n >= (1 << 29) {
+            return Some(
+                Diagnostic::error(format!(
+                    "property `{}` exceeds the LVGL pixel range (0..536870911)",
+                    decl.name
+                ))
+                .with_file(file)
+                .with_span(decl.span),
+            );
+        }
+    }
     match (&decl.value, want_color, want_number) {
         (DeclarationValue::HexColor(_), true, _) => None,
         (DeclarationValue::Number(_), _, true) => None,
@@ -387,9 +412,9 @@ impl<'a> LowerCtx<'a> {
                     }
                     text_seen = true;
                     let value = attr_string(attr);
-                    if value.is_empty() {
+                    if value.is_empty() || value.contains('\0') {
                         self.diagnostics.push(
-                            Diagnostic::error("`text` attribute must not be empty")
+                            Diagnostic::error("`text` attribute must not be empty or contain NUL")
                                 .with_file(self.file.clone())
                                 .with_span(attr.span),
                         );
@@ -492,6 +517,16 @@ impl<'a> LowerCtx<'a> {
         }
 
         for child in &node.children {
+            if child.widget_type == "Screen" {
+                self.diagnostics.push(
+                    Diagnostic::error(
+                        "`Screen` must be the document root; nested screens are not supported",
+                    )
+                    .with_file(self.file.clone())
+                    .with_span(child.span),
+                );
+                continue;
+            }
             if let Some(c) = self.lower_widget(child) {
                 widget.children.push(c);
             }

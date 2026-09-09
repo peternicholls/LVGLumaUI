@@ -1,0 +1,21 @@
+cmake_minimum_required(VERSION 3.16)
+project(lumaui_lvgl_smoke LANGUAGES C CXX)
+if(NOT LVGL_SOURCE_DIR)
+  message(FATAL_ERROR "Set LVGL_SOURCE_DIR to an LVGL 9.2.2 checkout")
+endif()
+set(LV_CONF_PATH "${CMAKE_CURRENT_SOURCE_DIR}/lv_conf.h" CACHE STRING "" FORCE)
+set(LV_CONF_BUILD_DISABLE_EXAMPLES ON CACHE BOOL "" FORCE)
+set(LV_CONF_BUILD_DISABLE_DEMOS ON CACHE BOOL "" FORCE)
+set(LV_CONF_BUILD_DISABLE_THORVG_INTERNAL ON CACHE BOOL "" FORCE)
+add_subdirectory("${LVGL_SOURCE_DIR}" lvgl)
+set(GENERATED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../examples/minimal/generated/ui/screens")
+add_executable(lumaui_lvgl_smoke main.c
+  "${GENERATED_DIR}/home_gen.c"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../../examples/layout/generated/ui/screens/layout_gen.c"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../../examples/minimal/firmware.c")
+target_include_directories(lumaui_lvgl_smoke PRIVATE "${GENERATED_DIR}")
+target_include_directories(lumaui_lvgl_smoke PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../examples/layout/generated/ui/screens")
+target_link_libraries(lumaui_lvgl_smoke PRIVATE lvgl m)
+target_compile_options(lumaui_lvgl_smoke PRIVATE -Wall -Wextra -Werror -UNDEBUG)
+enable_testing()
+add_test(NAME generated_screen_runtime COMMAND lumaui_lvgl_smoke)
