@@ -1,10 +1,12 @@
 # Tasks
 
-## 1.0.0 release work
+## Current status: 1.0.0 released; Phase 5 proposed
 
-The active work is stability and release verification of the implemented slice.
-`docs/NEXT_STEPS.md` contains the release gate; `docs/USAGE.md` describes the
-public supported behavior. Broader language and preview phases remain deferred.
+Phases 0–4 and the release verification gate are complete. The next planning
+packet is [Phase 5: native preview and release maintenance](../specs/002-native-preview/plan.md).
+Its [task checklist](../specs/002-native-preview/tasks.md) controls new work;
+the [deferred register](DEFERRED_WORK.md) records later proposals.
+Preview remains gated until its decision brief is approved and implemented.
 
 ## How To Use This Document
 
@@ -94,7 +96,7 @@ Turn provisional frontend scaffolding into a real, testable parser for a narrow 
 - `examples/minimal` parses end-to-end
 - supporting research and discussion material for the ratified slice has been reviewed by the developer
 
-### Immediate Work
+### Historical implementation sequence (complete)
 
 1. reduce the MVP language slice if needed
 2. update `LANGUAGE_SPEC.md` to ratify that slice
@@ -122,7 +124,7 @@ Resolve authored sources into a backend-ready, typed model.
 - supported widget validation
 - property validation
 - normalized semantic property model
-- explicit event and binding references
+- explicit named event references and binding rejection
 - deterministic validation-stage logging guidance where command behavior exposes it
 - lowering into the canonical IR
 
@@ -131,13 +133,13 @@ Resolve authored sources into a backend-ready, typed model.
 - duplicate ids are detected
 - unknown widgets and properties are rejected cleanly
 - style rules are validated and normalized
-- event and binding references are represented explicitly
+- named event references are represented explicitly; bindings are rejected
 - semantic output lowers into the canonical IR
 - operator-visible validation logging is intentional and stable where present
 - semantic validation tests cover key failures
 - shared contract changes have been reviewed and signed off by the developer before downstream stages rely on them
 
-### Immediate Work
+### Historical implementation sequence (complete)
 
 1. define the semantic model for the first supported slice
 2. normalize style declarations into explicit forms
@@ -178,7 +180,7 @@ Generate deterministic, readable LVGL C from IR.
 - one real example builds through the full compiler path
 - generated-file policy and backend mapping choices used by the slice have developer sign-off
 
-### Immediate Work
+### Historical implementation sequence (complete)
 
 1. connect `build` to the real semantic IR
 2. replace synthetic backend-only fixtures with frontend-driven snapshots
@@ -214,7 +216,7 @@ Make examples and tests function as trusted golden fixtures and stabilize the im
 - snapshot coverage exists for generated C
 - regression tests capture known parser and semantic edge cases
 
-### Immediate Work
+### Historical implementation sequence (complete)
 
 1. decide which examples are normative versus aspirational
 2. align examples with actual supported syntax
@@ -224,30 +226,19 @@ Make examples and tests function as trusted golden fixtures and stabilize the im
 
 Complete. `examples/minimal` is normative and exercised by CLI integration tests; `examples/dashboard` is explicitly labeled aspirational. `tests/fixtures/` carries shared expected-fail and normative fixtures that semantic and CLI tests consume.
 
-## Phase 5: Preview Integration
+## Phase 5: Native Preview and Release Maintenance
 
-### Purpose
+Status: proposed; implementation pending. Phases 0–4 are satisfied by 1.0.0.
 
-Add a preview path without compromising compiler-first design.
+The canonical [Phase 5 plan](../specs/002-native-preview/plan.md) defines the
+scope and exit gate. Its [decision brief](../specs/002-native-preview/decisions/D-001-native-preview-contract.md)
+requires explicit sign-off for native dependency, platform, callback and CLI
+contracts. No language expansion is included.
 
-### Entry Assumptions
-
-- Phase 4 exit gate is satisfied
-- generated output flow is stable enough to preview honestly
-
-### Deliverables
-
-- `lumaui preview`
-- LVGL SDL-oriented preview orchestration
-- prerequisite detection and failure guidance
-- minimal preview docs
-
-### Exit Gate
-
-- `lumaui preview` launches through an LVGL SDL-oriented workflow
-- preview uses generated artifacts rather than a separate runtime model
-- failure states are clear when LVGL or SDL prerequisites are missing
-- preview remains optional and does not distort the language surface
+Sequence: reusable release maintenance → preview contract approval → native
+runner → CLI orchestration → graphical/platform qualification and release.
+The [checklist](../specs/002-native-preview/tasks.md) carries acceptance and
+dependencies; do not duplicate an independent task list here.
 
 ## Cross-Phase Rules
 

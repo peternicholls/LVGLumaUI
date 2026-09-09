@@ -1,34 +1,41 @@
-# Next Steps
+# Next steps
 
-## Current phase
+## Baseline
 
-Stability and release verification for 1.0.0. The implemented language remains
-LS-0.2.0; this release adds no widgets, properties, selectors or runtime language.
+LumaUI 1.0.0 is [published](https://github.com/peternicholls/LVGLumaUI/releases/tag/v1.0.0).
+Its [final release workflow](https://github.com/peternicholls/LVGLumaUI/actions/runs/34389031479)
+passed compiler/package checks on Linux, Windows and macOS plus the LVGL 9.2.2
+headless runtime test. Phases 0–4 are complete. The language remains LS-0.2.0.
 
-The compiler pipeline is implemented end to end. The release work fixes
-validation, C declarations and output-preservation defects, and adds native
-packages, integration documentation and a real LVGL smoke test.
+## Active work: Phase 5 planning
 
-## Release gate
+The proposed next phase delivers an optional native preview of generated C,
+preceded by reusable release maintenance. Planning is complete enough for review;
+implementation and the preview contract are not yet approved.
 
-- All Rust tests, formatting and strict Clippy checks pass.
-- The normative examples validate and build deterministically.
-- User-region preservation and invalid-input rejection have regression tests.
-- Linux, Windows and macOS packages execute their included compiler and example.
-- Generated C compiles with LVGL 9.2.2 and passes the headless runtime test.
-- The version, lockfile, changelog, public usage docs and release notes agree.
+Read in order:
 
-The GitHub release job publishes only after every required job succeeds on the
-integration branch. A release number or successful Rust test alone does not
-establish that this gate has passed.
+1. [Phase 5 plan](../specs/002-native-preview/plan.md): scope, dependencies and exit gate.
+2. [Preview decision](../specs/002-native-preview/decisions/D-001-native-preview-contract.md):
+   alternatives, evidence and pending sign-off.
+3. [Execution tasks](../specs/002-native-preview/tasks.md): ordered implementation checklist.
+4. [Deferred work](DEFERRED_WORK.md): later language, reliability and distribution work.
 
-## After 1.0
+The next action is the release-maintenance contract review and dependency spike,
+then explicit preview decision sign-off. Do not treat proposed CLI flags,
+dependency acquisition or platform support as released behavior.
 
-Keep bug fixes compatible with the documented CLI and authored-language slice.
-Proposals for preview, grids, images, bindings, percentage sizes, multiple
-classes or richer styling require the existing decision/sign-off workflow.
-Do not implement them as incidental release polish.
+## Exit gate
 
-Use `scripts/lumaui-phase-check.sh --require-build` for the standard verification
-bundle. Keep backend and frontend snapshots exact and synchronized. Follow
-`docs/TASKS.md` for phase branches and PRs into `001-brownfield-spec`.
+Preview must use the existing generated C, display a selected screen, execute a
+real example callback and exit cleanly on each advertised preview platform.
+Invalid input, missing prerequisites, link errors and interruption need tested
+failure behavior. Existing compiler snapshots and all three native compiler
+packages must remain valid; build/validate must not require SDL.
+
+A clean-install demonstration and version-driven publication verification are
+required before a 1.1.0 candidate. Graphical evidence is separate from the existing
+headless test. The plan specifies the full acceptance matrix.
+
+Keep compatible bug fixes on 1.0.x where appropriate. No language expansion is
+part of this plan. Follow [TASKS](TASKS.md) for phase branches and review.
