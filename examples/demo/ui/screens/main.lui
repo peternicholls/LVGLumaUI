@@ -1,0 +1,8 @@
+<Screen id="home">
+  <Column class="root">
+    <Text id="title" text="LumaUI 1.0.0 demo"/>
+    <Button id="openSettings" onPress="open_settings">
+      <Text text="Settings"/>
+    </Button>
+  </Column>
+</Screen>
