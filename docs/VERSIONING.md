@@ -37,7 +37,13 @@ This separation is intentional because the repository can refine compiler implem
 
 ## Scheme
 
-LumaUI uses Semantic Versioning with a pre-1.0 discipline.
+LumaUI uses Semantic Versioning. From 1.0.0, compatible fixes use PATCH,
+compatible supported-surface additions use MINOR, and breaking changes to the
+public CLI, authored language or generated integration API require MAJOR.
+Internal Rust crates are implementation details rather than stable public APIs.
+The language specification continues to have its separate LS version.
+
+The following pre-1.0 rules remain historical guidance for older releases.
 
 Format:
 

@@ -1,0 +1,87 @@
+name: Verify and release LumaUI
+
+on:
+  pull_request:
+    branches: [001-brownfield-spec, master]
+  push:
+    branches: [codex/release-1.0.0, 001-brownfield-spec]
+
+permissions:
+  contents: read
+
+jobs:
+  compiler:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, windows-2022, macos-14]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Rust
+        run: rustup toolchain install stable --profile minimal --component rustfmt --component clippy
+      - run: cargo fmt --all --check
+      - run: cargo test --workspace --locked
+      - run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - run: cargo build --release --locked -p lumaui-cli
+      - run: python scripts/package-release.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: package-${{ matrix.os }}
+          path: dist/*
+          if-no-files-found: error
+
+  lvgl:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: lvgl/lvgl
+          ref: 7f07a129e8d77f4984fff8e623fd5be18ff42e74
+          path: target/lvgl-source
+          persist-credentials: false
+      - run: rustup toolchain install stable --profile minimal
+      - run: bash scripts/lumaui-phase-check.sh --require-build
+      - run: cargo run -p lumaui-cli -- build examples/layout
+      - name: Compile generated C against LVGL 9.2.2
+        run: cmake -S tests/lvgl -B target/lvgl-smoke -DLVGL_SOURCE_DIR="$GITHUB_WORKSPACE/target/lvgl-source" -DCMAKE_BUILD_TYPE=Debug
+      - run: cmake --build target/lvgl-smoke --parallel 2
+      - name: Run generated screen and click callback
+        run: ctest --test-dir target/lvgl-smoke --output-on-failure
+
+  release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/001-brownfield-spec'
+    needs: [compiler, lvgl]
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: package-*
+          path: dist
+          merge-multiple: true
+      - name: Publish verified 1.0.0 packages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(grep '^version = ' Cargo.toml | head -1)" = 'version = "1.0.0"'
+          if gh release view v1.0.0 >/dev/null 2>&1; then
+            echo 'v1.0.0 already exists; preserving the published release.'
+            exit 0
+          fi
+          (cd dist && sha256sum --check *.sha256)
+          gh release create v1.0.0 dist/* --target "$GITHUB_SHA" --title 'Luma UI for LVGL 1.0.0' --notes-file docs/RELEASE_1.0.0.md --draft
+          gh release edit v1.0.0 --draft=false --latest

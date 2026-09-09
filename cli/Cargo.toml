@@ -11,3 +11,7 @@ lumaui-backend-lvgl-c = { path = "../backend/lvgl_c" }
 lumaui-compiler = { path = "../compiler" }
 lumaui-parser = { path = "../parser" }
 lumaui-semantic = { path = "../semantic" }
+
+[[bin]]
+name = "lumaui"
+path = "src/main.rs"

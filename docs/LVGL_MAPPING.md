@@ -122,7 +122,7 @@ TODO:
 
 | LumaUI concept | Likely LVGL API family | Notes |
 | --- | --- | --- |
-| width / height | `lv_obj_set_width`, `lv_obj_set_height`, `lv_obj_set_size` | MVP supports integer pixels and percentages. Percent values map directly to LVGL sizing semantics relative to the parent content area. |
+| width / height | `lv_obj_set_width`, `lv_obj_set_height`, `lv_obj_set_size` | The current LS-0.2.0 slice supports nonnegative integer pixels only. Percentage sizing remains deferred. |
 | padding | `lv_obj_set_style_pad_*` | Use explicit sides after semantic normalization. |
 | margin subset | `lv_obj_set_style_margin_*` | Keep subset narrow and predictable. |
 | background color | `lv_obj_set_style_bg_color` | Only where the widget supports background styling. |
@@ -157,11 +157,17 @@ Event mapping ownership is split deliberately:
 - `backend/lvgl_c/` decides how that canonical event metadata becomes LVGL registration code
 - `cli/` owns any operator-facing logging around event-enabled build paths
 
-TODO:
+Implemented callback contract (existing named-hook mapping):
 
-- settle the generated callback signature contract
-- decide whether handler symbol validation is compile-time strict or configurable
-- capture the approved callback contract in feature decision material before relying on it as stable repository policy
+- `onPress` registers `<prefix>event_<handler>` with `LV_EVENT_CLICKED`.
+- Generated headers declare `void <prefix>event_<handler>(lv_event_t *e);`.
+- Firmware supplies the function body; missing implementations are link errors.
+- C++ users receive C-linkage declarations. The compiler validates identifier
+  shape, not firmware symbol definitions.
+- Each generated C file has one preserved user-owned region. Headers and all
+  compiler-owned regions are regenerated. Separate firmware files are preferred.
+- Use a NULL parent for a loadable screen; the existing create function can also
+  accept a parent for embedding. Firmware owns display setup and object lifetime.
 
 ## Binding Mapping
 

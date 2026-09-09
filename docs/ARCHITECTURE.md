@@ -81,7 +81,7 @@ Frontend data structures and tokenisation utilities.
 - AST definitions
 - source kind classification
 - lexer
-- future grammar parser
+- recursive-descent grammar parser
 
 The parser crate is allowed to know syntax, but not LVGL backend details.
 
@@ -141,7 +141,7 @@ User-facing entrypoint.
 - command parsing
 - invoking compiler stages
 - reporting diagnostics
-- writing generated output later
+- writing generated output with user-region preservation
 
 The CLI owns operator-facing command flow, stage orchestration, and the final presentation of diagnostics and logs. It should not become a second home for parser, semantic, IR, or backend business logic.
 
@@ -227,25 +227,16 @@ project/
 
 Generated files are never the source of truth.
 
-## First-Pass Implementation Boundary
+## Implemented 1.0 Boundary
 
-This repository pass intentionally implements:
+The workspace implements config/discovery, source-located lexing/parsing,
+semantic validation and style resolution, canonical IR, deterministic LVGL C
+and headers, and the init/doctor/validate/build CLI. Explicit user regions in
+C survive regeneration; callback logic normally lives in separate firmware
+files. The CLI preflights collisions and existing ownership before writing.
 
-- workspace and crate boundaries
-- config loading
-- source discovery
-- diagnostics formatting
-- tokenisation scaffolding
-- IR definitions
-- backend scaffolding
-
-It intentionally defers:
-
-- final grammar freeze
-- full parser implementation
-- full semantic lowering
-- on-disk C emission workflow
-- preview runtime integration
+Only the ratified language slice is supported. Bindings, assets, additional
+widgets and preview remain deferred. See `docs/USAGE.md` for integration.
 
 ## Phase Gates
 

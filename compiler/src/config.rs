@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -36,8 +36,15 @@ impl WorkspaceConfig {
         let raw = fs::read_to_string(path)
             .with_context(|| format!("failed to read config file {}", path.display()))?;
 
-        toml::from_str(&raw)
-            .with_context(|| format!("failed to parse config file {}", path.display()))
+        let config: Self = toml::from_str(&raw)
+            .with_context(|| format!("failed to parse config file {}", path.display()))?;
+        if config.lvgl_version != "9.x" {
+            bail!("{}: lvgl_version must be 9.x", path.display());
+        }
+        if config.project_name.trim().is_empty() {
+            bail!("{}: project_name must not be empty", path.display());
+        }
+        Ok(config)
     }
 
     pub fn starter(project_name: &str) -> Self {

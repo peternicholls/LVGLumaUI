@@ -214,7 +214,7 @@ impl Lexer {
                     closed = true;
                     break;
                 }
-                '\n' => {
+                '\n' | '\r' => {
                     self.diag(
                         "unterminated string literal",
                         self.span_at(line, column, value.len() + 1),

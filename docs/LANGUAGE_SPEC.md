@@ -178,3 +178,10 @@ output_dir = "generated/ui"
 ```
 
 `lvgl_version` MUST be `"9.x"` for `LS-0.2.0`.
+
+## Implementation limits in compiler 1.0.0
+
+The compiler bounds nesting to 128 levels and rejects pixel values at or above
+536870912 because LVGL reserves high coordinate bits for non-pixel encodings.
+NUL is rejected in text because LVGL labels use C strings. These validation
+checks prevent invalid target output; they add no authored-language constructs.

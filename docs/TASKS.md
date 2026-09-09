@@ -1,5 +1,11 @@
 # Tasks
 
+## 1.0.0 release work
+
+The active work is stability and release verification of the implemented slice.
+`docs/NEXT_STEPS.md` contains the release gate; `docs/USAGE.md` describes the
+public supported behavior. Broader language and preview phases remain deferred.
+
 ## How To Use This Document
 
 This roadmap is phase-based.
