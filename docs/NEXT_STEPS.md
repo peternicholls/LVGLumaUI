@@ -1,5 +1,16 @@
 # Next Steps
 
+## 2026-09-08 parser implementation update
+
+Phase 1 now constructs widget trees and style declarations from the normative
+fixture. Syntax errors include file, line and column, including unexpected EOF,
+mismatched tags, duplicate attributes and missing declaration values. Unsupported
+widgets, selectors and properties remain parseable for semantic validation.
+Nesting is bounded to 128 widget levels. The remaining work is semantic lowering
+and the separately proposed backend/release contract; successful parsing alone
+does not imply a buildable project. The older checklist below records the
+baseline from which this work started.
+
 ## Purpose
 
 This document is the execution-oriented companion to `TASKS.md`.
