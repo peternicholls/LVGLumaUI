@@ -45,5 +45,5 @@ with tempfile.TemporaryDirectory(prefix="lumaui-package-") as temporary:
         with tarfile.open(archive, "w:gz") as out:
             out.add(stage, arcname=name)
 digest = hashlib.sha256(archive.read_bytes()).hexdigest()
-(dist / f"{archive.name}.sha256").write_text(f"{digest}  {archive.name}\n")
+(dist / f"{archive.name}.sha256").write_bytes(f"{digest}  {archive.name}\n".encode("ascii"))
 print(archive)
